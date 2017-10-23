@@ -12,6 +12,9 @@ function define(name, value) {
         enumerable: true
     });
 }
+define("HTTPS_PORT", process.env.HTTPS_PORT);
+define("HTTPS_KEY", process.env.HTTPS_KEY);
+define("HTTPS_CERT", process.env.HTTPS_CERT);
 
 define("PI", 3.14);
 
