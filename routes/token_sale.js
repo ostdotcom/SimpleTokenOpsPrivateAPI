@@ -1,6 +1,6 @@
 "use strict";
 /*
- * Main application file
+ * Token Sale Routes
  *
  * * Author: Rachin
  * * Date: 23/10/2017
@@ -8,7 +8,7 @@
  */
 var express = require('express');
 var router = express.Router();
-var constants = require('../lib/constants');
+var constants = require('../config/core_constants');
 
 /* GET users listing. */
 router.post('/whitelist', function(req, res, next) {
