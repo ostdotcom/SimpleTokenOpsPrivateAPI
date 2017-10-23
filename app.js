@@ -1,3 +1,11 @@
+"use strict";
+/*
+ * Main application file
+ *
+ * * Author: Rachin
+ * * Date: 23/10/2017
+ * * Reviewed by: Sunil
+ */
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -7,7 +15,8 @@ var bodyParser = require('body-parser');
 var helmet = require('helmet');
 var sanitizer = require('express-sanitized');
 
-var address = require('./routes/address');
+// Address whitelisting route file
+var tokenSale = require('./routes/token_sale');
 
 var app = express();
 
@@ -32,7 +41,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(sanitizer());
 
 
-app.use('/address', address);
+app.use('/token-sale', tokenSale);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -1,3 +1,11 @@
+"use strict";
+/*
+ * Main application file
+ *
+ * * Author: Rachin
+ * * Date: 23/10/2017
+ * * Reviewed by: Sunil
+ */
 var express = require('express');
 var router = express.Router();
 

@@ -1,6 +1,11 @@
-# Logs
-logs
-*.log
+# Ignore tmp files and folders
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+/.idea
+
+package-lock.json
 
 # Runtime data
 pids
