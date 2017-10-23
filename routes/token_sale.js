@@ -8,10 +8,12 @@
  */
 var express = require('express');
 var router = express.Router();
+var constants = require('../lib/constants');
 
 /* GET users listing. */
 router.post('/whitelist', function(req, res, next) {
-	var address_to_white_list = req.body.address;
+  console.log("PI = " + constants.PI);
+	var address_to_white_list = req.body.address || req.parmas;
   if ( address_to_white_list && isAddressValid(address_to_white_list) ) {
     res.send('Address is valid. address_to_white_list = |' + address_to_white_list + '|');
   } else {
