@@ -31,6 +31,9 @@ build/Release
 # https://docs.npmjs.com/cli/shrinkwrap#caveats
 node_modules
 
+# Dev Folder
+.dev
+
 # Debug log from npm
 npm-debug.log
 .vscode
