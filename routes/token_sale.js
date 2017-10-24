@@ -6,25 +6,42 @@
  * * Date: 23/10/2017
  * * Reviewed by: Sunil
  */
-var express = require('express');
-var router = express.Router();
-var constants = require('../config/core_constants');
+var express = require('express')
+  , router = express.Router()
+  , web3Validator = require('../lib/web3/validator')
+  , web3Provider = require('../lib/web3/provider')
+  , web3Signer = require('../lib/web3/signer')
+  , coreAddresses = require('../config/core_addresses')
+  , whitelistContractAddress = coreAddresses.getAddressForContract('whitelister')
+  , tokenSaleContractAbi = require('../abi/TokenSale')
+  , myContract = new web3Provider.eth.Contract(tokenSaleContractAbi)
+  , publicEthereum = require("../lib/request/public_ethereum");
 
 /* GET users listing. */
 router.post('/whitelist', function(req, res, next) {
-  console.log("PI = " + constants.PI);
-	var address_to_white_list = req.body.address || req.parmas;
-  if ( address_to_white_list && isAddressValid(address_to_white_list) ) {
-    res.send('Address is valid. address_to_white_list = |' + address_to_white_list + '|');
+	var addressToWhiteList = req.body.address
+    , phase = res.body.phase;
+
+  if (web3Validator.isAddress(addressToWhiteList)) {
+    var encodedABI = myContract.methods.updateWhitelist(addressToWhiteList, phase).encodeABI();
+    var raxTx = {
+      to: whitelistContractAddress,
+      data: encodedABI,
+      gasPrice: '0x00',
+      gasLimit: '0x47E7C4'
+    };
+
+    web3Signer.perform(rawTx, 'whitelister')
+      .then(publicEthereum.sendSignedTransaction)
+      .then(function(){
+        res.setHeader('Content-Type', 'application/json');
+        res.send({});
+      });
   } else {
-    console.dir(req.body);
-    res.send('invalid address address_to_white_list = |" + address_to_white_list = |' + address_to_white_list + '|');
+    res.setHeader('Content-Type', 'application/json');
+    res.send({err: {code: 'ts_1'}});
   }
   
 });
-
-var isAddressValid = function( addressToWhiteList ) {
-  return true && addressToWhiteList;
-};
 
 module.exports = router;

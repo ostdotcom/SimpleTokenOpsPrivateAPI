@@ -21,7 +21,7 @@ const allAddresses = {
   }
 };
 
-const coreAddreses = {
+const coreAddresses = {
   getAddressForUser: function(userName){
     return allAddresses.users[userName].address;
   },
@@ -35,5 +35,5 @@ const coreAddreses = {
   }
 };
 
-module.exports = coreAddreses;
+module.exports = coreAddresses;
 
