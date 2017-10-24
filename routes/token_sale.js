@@ -47,15 +47,14 @@ router.post('/whitelist', function (req, res, next) {
 
     // handle final response
     const handlePublicOpsSuccess = function (publicOpsResp) {
-      const parsedPublicOpsResp = JSON.parse(publicOpsResp)
-        , success = parsedPublicOpsResp.success;
+      const success = publicOpsResp.success;
 
       if (success) {
-        var parsedPublicOpsRespData = parsedPublicOpsResp.data || {}
-          , transactionHash = parsedPublicOpsRespData.transaction_hash;
+        var publicOpsRespData = publicOpsResp.data || {}
+          , transactionHash = publicOpsRespData.transaction_hash;
         return responseHelper.successWithData({transaction_hash: transactionHash}).renderResponse(res);
       } else {
-        console.error(parsedPublicOpsResp);
+        console.error(publicOpsResp);
         return responseHelper.error('ts_4', 'Public OPS api error.').renderResponse(res);
       }
     };
