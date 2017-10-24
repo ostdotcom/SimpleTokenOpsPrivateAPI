@@ -27,8 +27,8 @@ router.post('/whitelist', function(req, res, next) {
     var raxTx = {
       to: whitelistContractAddress,
       data: encodedABI,
-      gasPrice: '0x00',
-      gasLimit: '0x47E7C4'
+      gasPrice: '0x3B9ACA00', // taken from http://ethgasstation.info/ ---- 1 gwei
+      gasLimit: '0xAAAAAAAAA'
     };
 
     web3Signer.perform(rawTx, 'whitelister')
