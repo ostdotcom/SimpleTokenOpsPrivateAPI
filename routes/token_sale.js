@@ -22,8 +22,8 @@ router.post('/whitelist', function(req, res, next) {
   var encodedParams = req.body.token;
 
   var jwtOnResolve = function(reqParams){
-    var addressToWhiteList = reqParams.address
-      , phase = reqParams.phase
+    var addressToWhiteList = reqParams.data.address
+      , phase = reqParams.data.phase
       , apiResponse = null;
 
     if (web3Validator.isAddress(addressToWhiteList)) {
@@ -34,13 +34,19 @@ router.post('/whitelist', function(req, res, next) {
         .then(publicEthereum.sendSignedTransaction)
         .then(function(publicOpsResp){
           var parsedPublicOpsResp = JSON.parse(publicOpsResp)
-            , success = parsedPublicOpsResp.success
-            , transactionHash = parsedPublicOpsResp.transaction_hash;
+            , success = parsedPublicOpsResp.success;
 
           if (success) {
+
+            var parsedPublicOpsRespData = parsedPublicOpsResp.data || {}
+              , transactionHash = parsedPublicOpsRespData.transaction_hash;
+
             apiResponse = responseHelper.successWithData({transaction_hash: transactionHash})
+
           } else {
+
             apiResponse = responseHelper.error('ts_1', 'public ops api errored out.')
+
           }
 
           return apiResponse.sendResponse(res)
