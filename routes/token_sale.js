@@ -16,8 +16,9 @@ var express = require('express')
   , whitelistContractAddress = coreAddresses.getAddressForContract('whitelister')
   , tokenSaleContractAbi = require('../abi/TokenSale')
   , myContract = new web3Provider.eth.Contract(tokenSaleContractAbi)
-  , publicEthereum = require("../lib/request/public_ethereum")
-  , jwtAuth = require("../lib/jwt/jwt_auth")
+  , publicEthereum = require('../lib/request/public_ethereum')
+  , jwtAuth = require('../lib/jwt/jwt_auth')
+	, responseHelper = require('../lib/formatter/response')
 ;
 
 
@@ -56,27 +57,19 @@ router.get('/test-valid', function(req, res, next) {
 	var token = jwtAuth.issueToken( data );
 
 	jwtAuth.verifyToken( token, function(err, decodedToken) {
-		if (err) {
-			return res.json(200, {
-				success: false, 
-				data: {
-					"token": token
-				},
-				error: {
-					"msg": 'The token is not valid'
-				}
-			});
-		}
-		return res.json(200, {
-			success: true, 
-			data: {
-				"token": token,
-				"decodedToken" : decodedToken
-			}
-		});
-	}); 
+    var r = null;
 
-	res.send("token: |" + token + "|");
+		if (err) {
+      r = responseHelper.error('ts_2', 'test-valid');
+		} else {
+      r = responseHelper.successWithData({
+        "token": token,
+        "decodedToken" : decodedToken
+      });
+    }
+
+    return r.sendResponse(res);
+	});
 });
 
 
@@ -87,29 +80,21 @@ router.get('/test-invalid', function(req, res, next) {
 	var token = jwtAuth.issueToken( data );
 
 	var malformedToken = token + "asdhaksdgjahgsdjhagsd";
-	jwtAuth.verifyToken( malformedToken, function(err, decodedToken) {
-		if (err) {
-			return res.json(200, {
-				success: false, 
-				data: {
-					"token": token,
-					"malformedToken": malformedToken
-				},
-				error: {
-					"msg": 'The token is not valid'
-				}
-			});
-		}
-		return res.json(200, {
-			success: true, 
-			data: {
-				"token": token,
-				"decodedToken" : decodedToken
-			}
-		});
-	}); 
 
-	res.send("token: |" + token + "|");
+  jwtAuth.verifyToken( malformedToken, function(err, decodedToken) {
+    var r = null;
+
+    if (err) {
+      r = responseHelper.error('ts_3', 'test-invalid');
+    } else {
+      r = responseHelper.successWithData({
+        "token": token,
+        "decodedToken" : decodedToken
+      });
+    }
+
+    return r.sendResponse(res);
+  });
 });
 
 
