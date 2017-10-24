@@ -2,72 +2,83 @@
 /*
  * Token Sale Routes
  *
- * * Author: Rachin
+ * * Author: Kedar
  * * Date: 23/10/2017
  * * Reviewed by: Sunil
  */
 
-var express = require('express')
+const express = require('express')
   , router = express.Router()
   , web3Validator = require('../lib/web3/validator')
   , web3Signer = require('../lib/web3/signer')
   , publicEthereum = require('../lib/request/public_ethereum')
   , jwtAuth = require('../lib/jwt/jwt_auth')
-	, responseHelper = require('../lib/formatter/response')
+  , responseHelper = require('../lib/formatter/response')
   , getRawTx = require('../lib/web3/get_raw_tx');
 
 
 /* GET users listing. */
-router.post('/whitelist', function(req, res, next) {
-  var encodedParams = req.body.token;
+router.post('/whitelist', function (req, res, next) {
+  const encodedParams = req.body.token;
 
-  var jwtOnResolve = function(reqParams){
-    var addressToWhiteList = reqParams.data.address
-      , phase = reqParams.data.phase
-      , apiResponse = null;
+  // send error, if token is invalid
+  const jwtOnReject = function (err) {
+    console.error(err);
+    return responseHelper.error('ts_1', 'Invalid token or expired').renderResponse(res);
+  };
 
-    if (web3Validator.isAddress(addressToWhiteList)) {
+  // send request to public ops, if token was valid
+  const jwtOnResolve = function (reqParams) {
+    const addressToWhiteList = reqParams.data.address
+      , phase = reqParams.data.phase;
 
-      var rawTx = getRawTx.forWhitelisting(addressToWhiteList, phase);
-
-      web3Signer.perform(rawTx, 'whitelister')
-        .then(publicEthereum.sendSignedTransaction)
-        .then(function(publicOpsResp){
-          var parsedPublicOpsResp = JSON.parse(publicOpsResp)
-            , success = parsedPublicOpsResp.success;
-
-          if (success) {
-
-            var parsedPublicOpsRespData = parsedPublicOpsResp.data || {}
-              , transactionHash = parsedPublicOpsRespData.transaction_hash;
-
-            apiResponse = responseHelper.successWithData({transaction_hash: transactionHash})
-
-          } else {
-
-            apiResponse = responseHelper.error('ts_1', 'public ops api errored out.')
-
-          }
-
-          return apiResponse.sendResponse(res)
-        });
-    } else {
-      apiResponse = responseHelper.error('ts_2', 'address is not valid.');
-      return apiResponse.sendResponse(res)
+    // check if address is a valid address
+    if (!web3Validator.isAddress(addressToWhiteList)) {
+      return responseHelper.error('ts_2', 'Whitelist address is invalid.').renderResponse(res);
     }
+
+    // check if phase is valid
+    if (!web3Validator.isTokenSalePhase(phase)) {
+      return responseHelper.error('ts_3', 'Whitelist phase is invalid.').renderResponse(res);
+    }
+
+    // generate raw transaction
+    const rawTx = getRawTx.forWhitelisting(addressToWhiteList, phase);
+
+    // handle final response
+    const handlePublicOpsSuccess = function (publicOpsResp) {
+      const parsedPublicOpsResp = JSON.parse(publicOpsResp)
+        , success = parsedPublicOpsResp.success;
+
+      if (success) {
+        var parsedPublicOpsRespData = parsedPublicOpsResp.data || {}
+          , transactionHash = parsedPublicOpsRespData.transaction_hash;
+        return responseHelper.successWithData({transaction_hash: transactionHash}).renderResponse(res);
+      } else {
+        console.error(parsedPublicOpsResp);
+        return responseHelper.error('ts_4', 'Public OPS api error.').renderResponse(res);
+      }
+    };
+
+    // Sign the transaction, send it to public ops machine, send response
+    return web3Signer.signTransactionBy(rawTx, 'whitelister')
+      .then(publicEthereum.sendSignedTransaction)
+      .then(handlePublicOpsSuccess);
+
   };
 
-  var jwtOnReject = function(err) {
-    var apiResponse = responseHelper.error('ts_3', 'Invalid params obtained for whitelisting.');
-    return apiResponse.sendResponse(res);
-  };
+  // Verify token
+  Promise.resolve(
+    jwtAuth.verifyToken(encodedParams, 'privateOps')
+      .then(
+        jwtOnResolve,
+        jwtOnReject
+      )
+  ).catch(function(err){
+    console.error(err);
+    responseHelper.error('ts_5', 'Something went wrong').renderResponse(res)
+  });
 
-  jwtAuth.verifyToken(encodedParams)
-    .then(
-      jwtOnResolve,
-      jwtOnReject
-    );
-  
 });
 
 module.exports = router;
