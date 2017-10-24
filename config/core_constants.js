@@ -12,12 +12,13 @@ function define(name, value) {
         enumerable: true
     });
 }
-define("HTTPS_PORT", process.env.HTTPS_PORT);
-define("HTTPS_KEY", process.env.HTTPS_KEY);
-define("HTTPS_CERT", process.env.HTTPS_CERT);
+define("HTTPS_PORT", process.env.ST_OPS_PRIVATE_API_HTTPS_PORT);
+define("HTTPS_KEY", process.env.ST_OPS_PRIVATE_API_HTTPS_KEY);
+define("HTTPS_CERT", process.env.ST_OPS_PRIVATE_API_HTTPS_CERT);
 
 define("PI", 3.14);
 
-define("ST_PUBLIC_GETH_BASE_URL", process.env.ST_PUBLIC_GETH_BASE_URL);
-define("ST_PRIVATE_GETH_PROVIDER", process.env.ST_PRIVATE_GETH_PROVIDER);
-define("ST_JWT_PRIVATE_KEY", "somethingsarebetterkeptinenvironemntvariables");
+define("ST_OPS_PUBLIC_API_BASE_URL", process.env.ST_OPS_PUBLIC_API_BASE_URL);
+define("ST_OPS_PRIVATE_GETH_PROVIDER", process.env.ST_OPS_PRIVATE_GETH_PROVIDER);
+define("ST_OPS_PUBLIC_API_SECRET_KEY", process.env.ST_OPS_PUBLIC_API_SECRET_KEY);
+define("ST_OPS_PRIVATE_API_SECRET_KEY", process.env.ST_OPS_PRIVATE_API_SECRET_KEY);

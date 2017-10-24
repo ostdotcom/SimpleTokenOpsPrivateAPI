@@ -44,6 +44,7 @@ app.use(sanitizer());
 app.use('/token-sale', tokenSale);
 
 // catch 404 and forward to error handler
+// TODO: Check what is printed
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
@@ -51,6 +52,7 @@ app.use(function(req, res, next) {
 });
 
 // error handler
+// TODO: Check what is printed
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
