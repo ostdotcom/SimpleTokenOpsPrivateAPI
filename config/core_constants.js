@@ -12,9 +12,9 @@ function define(name, value) {
         enumerable: true
     });
 }
-define("HTTPS_PORT", process.env.ST_OPS_PRIVATE_API_HTTPS_PORT);
-define("HTTPS_KEY", process.env.ST_OPS_PRIVATE_API_HTTPS_KEY);
-define("HTTPS_CERT", process.env.ST_OPS_PRIVATE_API_HTTPS_CERT);
+define("HTTPS_PORT", process.env.OPS_API_HTTPS_PORT);
+define("HTTPS_KEY", process.env.OPS_API_HTTPS_KEY);
+define("HTTPS_CERT", process.env.OPS_API_HTTPS_CERT);
 
 define("ST_OPS_PUBLIC_API_BASE_URL", process.env.ST_OPS_PUBLIC_API_BASE_URL);
 define("ST_GETH_RPC_PROVIDER", process.env.ST_GETH_RPC_PROVIDER);
