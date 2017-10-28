@@ -55,7 +55,7 @@ router.post('/whitelist', function (req, res, next) {
         return responseHelper.successWithData({transaction_hash: transactionHash}).renderResponse(res);
       } else {
         console.error(publicOpsResp);
-        return responseHelper.error('ts_4', 'Public OPS api error.').renderResponse(res);
+        return responseHelper.error('ts_4', 'Public OPS api error.', publicOpsResp.err.code).renderResponse(res);
       }
     };
 
