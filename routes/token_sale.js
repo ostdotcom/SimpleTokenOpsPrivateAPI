@@ -21,6 +21,9 @@ const express = require('express')
 router.post('/whitelist', function (req, res, next) {
   const encodedParams = req.body.token;
 
+  // for nonce too low error, we will retry once.
+  var retryCount = 0;
+
   // send error, if token is invalid
   const jwtOnReject = function (err) {
     console.error(err);
@@ -46,7 +49,7 @@ router.post('/whitelist', function (req, res, next) {
     const rawTx = getRawTx.forWhitelisting(addressToWhiteList, phase);
 
     // handle final response
-    const handlePublicOpsSuccess = function (publicOpsResp) {
+    const handlePublicOpsOkResponse = function (publicOpsResp) {
       const success = publicOpsResp.success;
 
       if (success) {
@@ -55,14 +58,30 @@ router.post('/whitelist', function (req, res, next) {
         return responseHelper.successWithData({transaction_hash: transactionHash}).renderResponse(res);
       } else {
         console.error(publicOpsResp);
-        return responseHelper.error('ts_4', 'Public OPS api error.', publicOpsResp.err.code).renderResponse(res);
+
+        const isNonceTooLow = function () {
+          return publicOpsResp.err.code.indexOf('nonce too low') > -1;
+        };
+
+        const retryCountMaxReached = function () {
+          return retryCount > 0;
+        };
+
+        if(isNonceTooLow() && !retryCountMaxReached()) {
+          retryCount = retryCount + 1;
+          return web3Signer.retryAfterClearingNonce(rawTx, 'whitelister')
+            .then(publicEthereum.sendSignedTransaction)
+            .then(handlePublicOpsOkResponse);
+        } else {
+          return responseHelper.error('ts_4', 'Public OPS api error.', publicOpsResp.err.code).renderResponse(res);
+        }
       }
     };
 
     // Sign the transaction, send it to public ops machine, send response
     return web3Signer.signTransactionBy(rawTx, 'whitelister')
       .then(publicEthereum.sendSignedTransaction)
-      .then(handlePublicOpsSuccess);
+      .then(handlePublicOpsOkResponse);
 
   };
 
