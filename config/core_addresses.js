@@ -12,6 +12,10 @@ const allAddresses = {
     whitelister: {
       address: process.env.ST_WHITELIST_ACCOUNT_ADDR,
       passphrase: process.env.ST_WHITELIST_ACCOUNT_PASSPHRASE
+    },
+    tempReceiver: {
+      address: process.env.ST_TEMP_ACCOUNT_ADDR,
+      passphrase: process.env.ST_TEMP_ACCOUNT_PASSPHRASE
     }
   },
   contracts: {
