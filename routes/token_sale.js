@@ -36,9 +36,9 @@ router.post('/whitelist', function (req, res, next) {
       , phase = reqParams.data.phase;
 
     // check if address is a valid address
-    //if (!web3Validator.isAddress(addressToWhiteList)) {
-    //  return responseHelper.error('ts_2', 'Whitelist address is invalid.').renderResponse(res);
-    //}
+    if (!web3Validator.isAddress(addressToWhiteList)) {
+      return responseHelper.error('ts_2', 'Whitelist address is invalid.').renderResponse(res);
+    }
 
     // check if phase is valid
     if (!web3Validator.isTokenSalePhase(phase)) {

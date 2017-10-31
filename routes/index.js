@@ -11,7 +11,7 @@ const express = require('express')
   , router = express.Router()
   , jwtAuth = require('../lib/jwt/jwt_auth')
   , responseHelper = require('../lib/formatter/response')
-  , web3RpcProvider = require('../lib/web3/rpc_provider');
+  , web3Validator = require('../lib/web3/validator');
 
 
 /* validate checksum for a address */
@@ -29,7 +29,7 @@ router.get('/address/check', function (req, res, next) {
   var jwtOnResolve = function (reqParams) {
     const address = reqParams.data.address;
 
-    if (web3RpcProvider.utils.isAddress(address)) {
+    if (web3Validator.isAddress(address)) {
       responseHelper.successWithData({}).renderResponse(res);
     } else {
       responseHelper.error('i_2', 'Invalid address').renderResponse(res)
