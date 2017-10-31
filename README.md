@@ -13,4 +13,7 @@ export ST_OPS_PUBLIC_API_SECRET_KEY='2somethingsarebetterkeptinenvironemntvariab
 
 export ST_OPS_PUBLIC_API_BASE_URL='http://127.0.0.1:3001'
 
+export ST_TEMP_ACCOUNT_ADDR='0x97228f22bee75bbc78353e821338aefda13a69d4'
+export ST_TEMP_ACCOUNT_PASSPHRASE='123456'
+
 node ./bin/www
