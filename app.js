@@ -17,7 +17,8 @@ const express = require('express')
   , app = express()
   , responseHelper = require('./lib/formatter/response')
   // Address whitelisting route file
-  , tokenSale = require('./routes/token_sale');
+  , tokenSale = require('./routes/token_sale')
+  , index = require('./routes/index');
 
 // uncomment after placing your favicon in /public
 app.use(logger('combined'));
@@ -35,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(sanitizer());
 
 app.use('/token-sale', tokenSale);
+app.use('/', index);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
