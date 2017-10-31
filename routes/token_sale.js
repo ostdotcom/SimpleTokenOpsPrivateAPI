@@ -14,7 +14,8 @@ const express = require('express')
   , publicEthereum = require('../lib/request/public_ethereum')
   , jwtAuth = require('../lib/jwt/jwt_auth')
   , responseHelper = require('../lib/formatter/response')
-  , getRawTx = require('../lib/web3/get_raw_tx');
+  , getRawTx = require('../lib/web3/get_raw_tx')
+  , web3RpcProvider = require('../lib/web3/rpc_provider');
 
 
 /* GET users listing. */
@@ -32,13 +33,15 @@ router.post('/whitelist', function (req, res, next) {
 
   // send request to public ops, if token was valid
   const jwtOnResolve = function (reqParams) {
-    const addressToWhiteList = reqParams.data.address
+    var addressToWhiteList = reqParams.data.address
       , phase = reqParams.data.phase;
 
     // check if address is a valid address
     if (!web3Validator.isAddress(addressToWhiteList)) {
       return responseHelper.error('ts_2', 'Whitelist address is invalid.').renderResponse(res);
     }
+
+    addressToWhiteList = web3RpcProvider.utils.toChecksumAddress(addressToWhiteList);
 
     // check if phase is valid
     if (!web3Validator.isTokenSalePhase(phase)) {
