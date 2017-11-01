@@ -36,6 +36,13 @@ router.post('/whitelist', function (req, res, next) {
     var addressToWhiteList = reqParams.data.address
       , phase = reqParams.data.phase;
 
+    try {
+      // convert the address to checksum.
+      addressToWhiteList = web3RpcProvider.utils.toChecksumAddress(addressToWhiteList);
+    } catch(err) {
+      return responseHelper.error('ts_1.5', 'Invalid address').renderResponse(res);
+    }
+
     // check if address is a valid address
     if (!web3Validator.isAddress(addressToWhiteList)) {
       return responseHelper.error('ts_2', 'Whitelist address is invalid.').renderResponse(res);
