@@ -7,6 +7,8 @@
  * * Reviewed by: Sunil
  */
 
+const core_abis = require('./core_abis');
+
 const allAddresses = {
   users: {
     whitelister: {
@@ -21,23 +23,23 @@ const allAddresses = {
   contracts: {
     simpleToken: {
       address: '',
-      abi: require('../abi/simpleToken')
+      abi: core_abis.simpleToken
     },
     tokenSale: {
       address: process.env.ST_TOKEN_SALE_CONTRACT_ADDR,
-      abi: require('../abi/tokenSale')
+      abi: core_abis.tokenSale
     },
     trustee: {
       address: '',
-      abi: require('../abi/trustee')
+      abi: core_abis.trustee
     },
     futureTokenSaleLockBox: {
       address: '',
-      abi: require('../abi/futureTokenSaleLockBox')
+      abi: core_abis.futureTokenSaleLockBox
     },
     grantableAllocations: {
       address: '',
-      abi: require('../abi/grantableAllocations')
+      abi: core_abis.grantableAllocations
     }
   }
 };
