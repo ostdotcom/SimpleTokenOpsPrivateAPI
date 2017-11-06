@@ -40,6 +40,10 @@ const allAddresses = {
     grantableAllocations: {
       address: JSON.parse(process.env.ST_GRANTABLE_ALLOCATIONS_CONTRACT_ADDRS),
       abi: core_abis.grantableAllocations
+    },
+    presales: {
+      address: JSON.parse(process.env.ST_PRESALES_CONTRACT_ADDRS),
+      abi: core_abis.presales
     }
   }
 };
