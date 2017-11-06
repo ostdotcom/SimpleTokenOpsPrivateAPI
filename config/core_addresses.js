@@ -13,14 +13,31 @@ const allAddresses = {
       address: process.env.ST_WHITELIST_ACCOUNT_ADDR,
       passphrase: process.env.ST_WHITELIST_ACCOUNT_PASSPHRASE
     },
-    tempReceiver: {
-      address: process.env.ST_TEMP_ACCOUNT_ADDR,
-      passphrase: process.env.ST_TEMP_ACCOUNT_PASSPHRASE
+    postInitOwner: {
+      address: process.env.ST_POST_INIT_OWNER_ADDR,
+      passphrase: process.env.ST_POST_INIT_OWNER_PASSPHRASE
     }
   },
   contracts: {
-    whitelister: {
-      address: process.env.ST_WHITELIST_CONTRACT_ADDR
+    simpleToken: {
+      address: '',
+      abi: require('../abi/simpleToken')
+    },
+    tokenSale: {
+      address: process.env.ST_TOKEN_SALE_CONTRACT_ADDR,
+      abi: require('../abi/tokenSale')
+    },
+    trustee: {
+      address: '',
+      abi: require('../abi/trustee')
+    },
+    futureTokenSaleLockBox: {
+      address: '',
+      abi: require('../abi/futureTokenSaleLockBox')
+    },
+    grantableAllocations: {
+      address: '',
+      abi: require('../abi/grantableAllocations')
     }
   }
 };
@@ -36,6 +53,10 @@ const coreAddresses = {
 
   getAddressForContract: function(contractName){
     return allAddresses.contracts[contractName].address;
+  },
+
+  getAbiForContract: function(contractName) {
+    return allAddresses.contracts[contractName].abi;
   }
 };
 
