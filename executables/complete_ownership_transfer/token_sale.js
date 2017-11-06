@@ -7,8 +7,10 @@
  * * Reviewed by: Sunil
  */
 
-const helper = require('./helper');
+const helper = require('./helper')
+  , coreAddresses = require('../../config/core_addresses')
+  , contractName = 'tokenSale';
 
-var contractAddr = process.env.ST_TOKEN_SALE_CONTRACT_ADDR;
+var contractAddr = coreAddresses.getAddressForContract(contractName);
 
-helper.performFor('tokenSale', contractAddr);
+helper.performFor(contractName, contractAddr);

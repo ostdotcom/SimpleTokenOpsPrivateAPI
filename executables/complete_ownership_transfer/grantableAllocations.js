@@ -8,10 +8,12 @@
  */
 
 
-const helper = require('./helper');
+const helper = require('./helper')
+  , coreAddresses = require('../../config/core_addresses')
+  , contractName = 'grantableAllocations';
 
-var contractAddresses = JSON.parse(process.env.ST_GRANTABLE_ALLOCATIONS_CONTRACT_ADDRS);
+var contractAddresses = coreAddresses.getAddressesForContract(contractName);
 
 for(var i = 0; i < contractAddresses.length; i++) {
-  helper.performFor('grantableAllocations', contractAddresses[i]);
+  helper.performFor(contractName, contractAddresses[i]);
 }

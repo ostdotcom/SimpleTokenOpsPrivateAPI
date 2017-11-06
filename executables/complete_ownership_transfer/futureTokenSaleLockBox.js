@@ -7,8 +7,10 @@
  * * Reviewed by: Sunil
  */
 
-const helper = require('./helper');
+const helper = require('./helper')
+  , coreAddresses = require('../../config/core_addresses')
+  , contractName = 'futureTokenSaleLockBox';
 
-var contractAddr = process.env.ST_FUTURE_TOKEN_SALE_LOCK_BOX_CONTRACT_ADDR;
+var contractAddr = coreAddresses.getAddressForContract(contractName);
 
-helper.performFor('futureTokenSaleLockBox', contractAddr);
+helper.performFor(contractName, contractAddr);
