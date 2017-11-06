@@ -22,7 +22,7 @@ const allAddresses = {
   },
   contracts: {
     simpleToken: {
-      address: '',
+      address: process.env.ST_SIMPLE_TOKEN_CONTRACT_ADDR,
       abi: core_abis.simpleToken
     },
     tokenSale: {
@@ -30,19 +30,33 @@ const allAddresses = {
       abi: core_abis.tokenSale
     },
     trustee: {
-      address: '',
+      address: process.env.ST_TRUSTEE_CONTRACT_ADDR,
       abi: core_abis.trustee
     },
     futureTokenSaleLockBox: {
-      address: '',
+      address: process.env.ST_FUTURE_TOKEN_SALE_LOCK_BOX_CONTRACT_ADDR,
       abi: core_abis.futureTokenSaleLockBox
     },
     grantableAllocations: {
-      address: '',
+      address: JSON.parse(process.env.ST_GRANTABLE_ALLOCATIONS_CONTRACT_ADDRS),
       abi: core_abis.grantableAllocations
     }
   }
 };
+
+const addrToContractNameMap = {};
+
+for(var contractName in allAddresses.contracts) {
+  var addr = allAddresses.contracts[contractName].address;
+
+  if ( Array.isArray(addr) ) {
+    for(var i = 0; i < addr.length; i ++) {
+      addrToContractNameMap[addr[i].toLowerCase()] = contractName;
+    }
+  } else {
+    addrToContractNameMap[addr.toLowerCase()] = contractName;
+  }
+}
 
 const coreAddresses = {
   getAddressForUser: function(userName){
@@ -68,6 +82,10 @@ const coreAddresses = {
       throw "Please pass valid contractName to get contract address"
     }
     return contractAddresses;
+  },
+
+  getContractNameFor: function(contractAddr) {
+    return addrToContractNameMap[contractAddr.toLowerCase()];
   },
 
   getAbiForContract: function(contractName) {
