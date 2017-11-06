@@ -17,6 +17,10 @@ const _private = {
 
   // Complete Ownership Transfer (claim the ownership)
   completeOwnershipTransferFor: function (contractName, contractAddr, senderName) {
+    if (coreAddresses.getContractNameFor(contractAddr) != contractName) {
+      throw 'Contract name: ' + contractName + ' and contract addr: ' + contractAddr + ' dont match.';
+    }
+
     var rawTx = getRawTx.completeOwnershipTransfer(contractName, contractAddr, senderName);
 
     // handle final response
