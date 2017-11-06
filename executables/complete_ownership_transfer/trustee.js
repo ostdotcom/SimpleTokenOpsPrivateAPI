@@ -1,4 +1,4 @@
-"use strict";
+//"use strict";
 /*
  * Complete ownership transfer for trustee contract.
  *
@@ -7,10 +7,10 @@
  * * Reviewed by: Sunil
  */
 
-const helper = require('./helper')
-  , coreAddresses = require('../../config/core_addresses')
-  , contractName = 'trustee';
-
-var contractAddr = coreAddresses.getAddressForContract(contractName);
-
-helper.performFor(contractName, contractAddr);
+//const helper = require('./helper')
+//  , coreAddresses = require('../../config/core_addresses')
+//  , contractName = 'trustee';
+//
+//var contractAddr = coreAddresses.getAddressForContract(contractName);
+//
+//helper.performFor(contractName, contractAddr);
