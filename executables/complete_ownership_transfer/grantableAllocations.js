@@ -14,6 +14,10 @@ const helper = require('./helper')
 
 var contractAddresses = coreAddresses.getAddressesForContract(contractName);
 
-for(var i = 0; i < contractAddresses.length; i++) {
-  helper.performFor(contractName, contractAddresses[i]);
+var loop = async function () {
+  for(var i = 0; i < contractAddresses.length; i++) {
+    await helper.performFor(contractName, contractAddresses[i]);
+  }
 }
+
+loop();
