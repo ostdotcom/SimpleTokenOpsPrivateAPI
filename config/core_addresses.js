@@ -54,7 +54,20 @@ const coreAddresses = {
   },
 
   getAddressForContract: function(contractName){
-    return allAddresses.contracts[contractName].address;
+    var contractAddress = allAddresses.contracts[contractName].address;
+    if(!contractAddress || contractAddress=='' || Array.isArray(contractAddress)){
+      throw "Please pass valid contractName to get contract address"
+    }
+    return contractAddress;
+  },
+
+  // This must return array of addresses.
+  getAddressesForContract: function(contractName){
+    var contractAddresses = allAddresses.contracts[contractName].address;
+    if(!contractAddresses || !Array.isArray(contractAddresses) || contractAddresses.length==0 ){
+      throw "Please pass valid contractName to get contract address"
+    }
+    return contractAddresses;
   },
 
   getAbiForContract: function(contractName) {
