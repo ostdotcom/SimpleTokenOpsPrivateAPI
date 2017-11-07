@@ -51,11 +51,11 @@ const helper = {
         const success = publicOpsResp.success;
 
         if (success) {
-          console.log('----- Tx Successful');
+          console.log('----- Tx Successful for contract: ' +  contractName);
           console.log(publicOpsResp);
           onResolve(publicOpsResp.data);
         } else {
-          console.error('----- Tx Error');
+          console.error('----- Tx Error for contract: ' + contractName);
           console.error(publicOpsResp);
           process.exit(1);
         }
@@ -96,7 +96,7 @@ const helper = {
     });
   },
 
-  // feed data in contract with Max 35 logic
+  // Feed data in contract with Max 35 logic
   processFeedingData: function (contractName, senderName, data, maxEntriesPerContract, contractAddresses) {
     return new Promise(async function (onResolve, onReject) {
 
@@ -128,8 +128,8 @@ const helper = {
           contractAddressIndex += 1;
           console.log("\n\n");
         }
-
       }
+
       onResolve();
     });
 
@@ -142,16 +142,23 @@ const helper = {
 
   // Get raw transaction for transaction type
   getRawTransactionFor: function(txType, contractName, contractAddress, senderName, dataForTx) {
+
     if (txType == 'callLockContract') {
       // define different lock methods for different contracts
       return getRawTx.forLockContract(contractName, contractAddress, senderName);
     } else if (txType == 'callAddData') {
       // define different add data methods for different contracts
       if ('grantableAllocations' == coreAddresses.getContractNameFor(contractAddress)) {
+
         return helper.getTxForAddGrantableAllocation(contractName, contractAddress, senderName, dataForTx);
+
+      } else if ('preSales' == coreAddresses.getContractNameFor(contractAddress)) {
+
+        return helper.getTxForPreSaleAllocation(contractName, contractAddress, senderName, dataForTx);
+
       }
+      throw "Unhandled txType: " + txType + " for contract name: " + contractName + " at address: " + contractAddress;
     }
-    throw "Unhandled txType: " + txType + " for contract name: " + contractName + " at address: " + contractAddress;
   },
 
   // get raw transaction for addGrantableAllocation method
@@ -160,6 +167,14 @@ const helper = {
       amount = dataForTx[1],
       isRevokable = dataForTx[2];
     return getRawTx.addGrantableAllocation(contractName, contractAddress, senderName, receiverAddr, amount, isRevokable);
+  },
+
+  // Get Raw Transaction for addPresale method
+  getTxForPreSaleAllocation: function(contractName, contractAddress, senderName, dataForTx) {
+    var receiverAddr = dataForTx[0],
+      baseAmount = dataForTx[1],
+      bonusAmount = dataForTx[2];
+    return getRawTx.addPreSaleAllocation(contractName, contractAddress, senderName, receiverAddr, baseAmount, bonusAmount);
   }
 
 };
