@@ -42,7 +42,9 @@ const helper = {
   sendTransaction: function (txType, contractName, contractAddress, senderName, dataForTx) {
 
     var rawTx = helper.getRawTransactionFor(txType, contractName, contractAddress, senderName, dataForTx);
-
+    console.log("-----------------------------------rawTx-----------------------------------");
+    console.log(rawTx);
+    console.log("-----------------------------------rawTx-----------------------------------");
     // handle final response
     const handlePublicOpsOkResponse = function (publicOpsResp) {
       return new Promise(function (onResolve, onReject) {
