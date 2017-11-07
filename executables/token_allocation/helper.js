@@ -157,8 +157,8 @@ const helper = {
         return helper.getTxForPreSaleAllocation(contractName, contractAddress, senderName, dataForTx);
 
       }
-      throw "Unhandled txType: " + txType + " for contract name: " + contractName + " at address: " + contractAddress;
     }
+    throw "Unhandled txType: " + txType + " for contract name: " + contractName + " at address: " + contractAddress;
   },
 
   // get raw transaction for addGrantableAllocation method
