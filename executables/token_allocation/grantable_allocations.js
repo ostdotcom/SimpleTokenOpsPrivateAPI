@@ -46,6 +46,11 @@ const grantableAllocations = {
       var parsedData = [];
       for (var i = 0; i < totalEntries; i++) {
 
+        // Continue if blank value
+        if (!data[i] || data[i] == '') {
+          continue;
+        }
+
         var grantData = data[i],
           receiverAddr = grantData[0].trim(),
           amount = new bigNumber(grantData[1].trim()),
@@ -87,7 +92,7 @@ const grantableAllocations = {
     var parsedCsvData = await grantableAllocations.validateAndParse(csvData, contractAddresses, maxEntriesPerContract);
 
     console.log("Max Entries " + maxEntriesPerContract + " will be entered per Contract");
-    console.log("Total Entries to process: " + csvData.length);
+    console.log("Total Entries to process: " + parsedCsvData.length);
     console.log("All Contract Addresses: " + contractAddresses);
 
     var prompts = readline.createInterface(process.stdin, process.stdout);
