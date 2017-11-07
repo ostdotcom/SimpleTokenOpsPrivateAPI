@@ -88,7 +88,7 @@ const helper = {
         function(){
           publicEthereum.getTransactionInfo(publicOpsRespData.transaction_hash).then(handleGetTxInfoResponse);
         },
-        5000
+        10000
       );
 
     });
