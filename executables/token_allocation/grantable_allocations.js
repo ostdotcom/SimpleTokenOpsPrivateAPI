@@ -101,6 +101,7 @@ const grantableAllocations = {
 
     console.log("Max Entries " + maxEntriesPerContract + " will be entered per Contract");
     console.log("Total Entries to process: " + parsedCsvData.length);
+    console.log("Sender Name: "+ senderName + " address: " + coreAddresses.getAddressForUser(senderName))
     console.log("All Contract Addresses: " + contractAddresses);
 
     if (isPromptNeededBool) {
