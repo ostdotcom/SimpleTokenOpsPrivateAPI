@@ -175,6 +175,15 @@ const helper = {
       baseAmount = dataForTx[1],
       bonusAmount = dataForTx[2];
     return getRawTx.addPreSaleAllocation(contractName, contractAddress, senderName, receiverAddr, baseAmount, bonusAmount);
+  },
+
+  // Verify is prompt needed values
+  validateIsPromptNeeded: function(isPromptNeeded) {
+    if (isPromptNeeded === undefined || isPromptNeeded == '' || !['true','false'].includes(isPromptNeeded)) {
+      console.log("Invalid isPromptNeeded: " + isPromptNeeded + " value");
+      process.exit(1);
+    }
+    return (isPromptNeeded == 'true');
   }
 
 };

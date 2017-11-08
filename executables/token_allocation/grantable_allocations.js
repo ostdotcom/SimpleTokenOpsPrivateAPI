@@ -5,6 +5,9 @@
  * * Author: Abhay
  * * Date: 04/11/2017
  * * Reviewed by: Sunil
+ *
+ * node grantable_allocation.js bool
+ *
  */
 
 // STEPS
@@ -84,6 +87,8 @@ const grantableAllocations = {
 
   performGrant: async function() {
 
+    const isPromptNeededBool = helper.validateIsPromptNeeded(process.argv[2]);
+
     const filePath = "../../data/grant_allocations.csv",
       contractName = 'grantableAllocations',
       contractAddresses = coreAddresses.getAddressesForContract(contractName),
@@ -98,24 +103,28 @@ const grantableAllocations = {
     console.log("Total Entries to process: " + parsedCsvData.length);
     console.log("All Contract Addresses: " + contractAddresses);
 
-    var prompts = readline.createInterface(process.stdin, process.stdout);
+    if (isPromptNeededBool) {
 
-    await new Promise(
-      function (onResolve, onReject) {
-        prompts.question("Do you want to really do this? [Y/N]",
-          function (intent) {
-            if (intent === 'Y') {
-              console.log("Initiating GrantableAllocation script for contract: " + contractName);
-              prompts.close();
-              onResolve();
-            } else {
-              console.error('Exiting script.');
-              process.exit(1);
+      var prompts = readline.createInterface(process.stdin, process.stdout);
+
+      await new Promise(
+        function (onResolve, onReject) {
+          prompts.question("Do you want to really do this? [Y/N]",
+            function (intent) {
+              if (intent === 'Y') {
+                console.log("Initiating GrantableAllocation script for contract: " + contractName);
+                prompts.close();
+                onResolve();
+              } else {
+                console.error('Exiting script.');
+                process.exit(1);
+              }
             }
-          }
-        );
-      }
-    );
+          );
+        }
+      );
+    }
+
     await helper.processFeedingData(contractName, senderName, parsedCsvData, maxEntriesPerContract, contractAddresses);
   }
 
