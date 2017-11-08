@@ -72,7 +72,10 @@ const grantableAllocations = {
         }
 
         var isRevokableBool = (isRevokable == "true");
-        parsedData.push([web3RpcProvider.utils.toChecksumAddress(receiverAddr), amount, isRevokableBool]);
+
+        var checkSumAddr = web3RpcProvider.utils.toChecksumAddress(receiverAddr);
+        console.log("parsed validated addrs: " + checkSumAddr + " amount: " + amount + " isRevokableBool: " + isRevokableBool);
+        parsedData.push([checkSumAddr, amount, isRevokableBool]);
       }
 
       onResolve(parsedData);

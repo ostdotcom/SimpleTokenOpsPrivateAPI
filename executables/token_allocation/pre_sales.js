@@ -70,14 +70,15 @@ const preSaleAllocations = {
 
         var bonusAmountPercentage = Math.ceil((bonusAmount/baseAmount)*100);
         if (bonusAmountPercentage < 15 || bonusAmountPercentage > 55) {
-          console.error("bonusAmount: " + bonusAmount + " + baseAmount: " + baseAmount );
-          console.error("bonus tokens percentage: " + bonusAmountPercentage +" should be between 15% - 55% of base tokens for receiver: " + receiverAddr);
+          console.error(" baseAmount: " + baseAmount + " bonusAmount: " + bonusAmount);
+          console.error("bonus tokens percentage: " + bonusAmountPercentage +" It should be between 15% - 55% of base tokens for receiver: " + receiverAddr);
           process.exit(1);
         }
 
-        parsedData.push([web3RpcProvider.utils.toChecksumAddress(receiverAddr), baseAmount, bonusAmount]);
+        var checkSumAddr = web3RpcProvider.utils.toChecksumAddress(receiverAddr);
+        console.log("parsed validated addrs: " + checkSumAddr + " base amount: " + baseAmount + " bonus amount: " + bonusAmount);
+        parsedData.push([checkSumAddr, baseAmount, bonusAmount]);
       }
-
       onResolve(parsedData);
     });
   },
