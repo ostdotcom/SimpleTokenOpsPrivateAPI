@@ -10,7 +10,7 @@
 
 const helper = require('./helper')
   , coreAddresses = require('../../config/core_addresses')
-  , contractName = 'presales';
+  , contractName = 'preSales';
 
 var contractAddresses = coreAddresses.getAddressesForContract(contractName);
 
