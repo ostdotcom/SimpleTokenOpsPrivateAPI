@@ -21,8 +21,8 @@ const express = require('express')
 router.post('/whitelist', function (req, res, next) {
   const performer = function () {
     const decodedParams = req.decodedParams
-      , addressToWhiteList = decodedParams.address
       , phase = decodedParams.phase;
+    var addressToWhiteList = decodedParams.address;
 
     // for nonce too low error, we will retry once.
     var retryCount = 0;
@@ -31,6 +31,7 @@ router.post('/whitelist', function (req, res, next) {
       // convert the address to checksum.
       addressToWhiteList = web3RpcProvider.utils.toChecksumAddress(addressToWhiteList);
     } catch(err) {
+      console.error(err);
       return responseHelper.error('ts_1', 'Invalid address').renderResponse(res);
     }
 
