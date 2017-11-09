@@ -152,7 +152,7 @@ const helper = {
 
         return helper.getTxForAddGrantableAllocation(contractName, contractAddress, senderName, dataForTx);
 
-      } else if ('preSales' == coreAddresses.getContractNameFor(contractAddress)) {
+      } else if ('presales' == coreAddresses.getContractNameFor(contractAddress)) {
 
         return helper.getTxForPreSaleAllocation(contractName, contractAddress, senderName, dataForTx);
 

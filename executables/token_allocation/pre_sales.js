@@ -91,7 +91,7 @@ const preSaleAllocations = {
     const isPromptNeededBool = helper.validateIsPromptNeeded(process.argv[2]);
 
     const filePath = "../../data/pre_sales.csv",
-      contractName = 'preSales',
+      contractName = 'presales',
       contractAddresses = coreAddresses.getAddressesForContract(contractName),
       maxEntriesPerContract = 35,
       senderName = 'postInitOwner';
