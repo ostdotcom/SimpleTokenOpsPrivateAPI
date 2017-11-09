@@ -12,7 +12,6 @@ const express = require('express')
   , web3Validator = require('../lib/web3/validator')
   , web3Signer = require('../lib/web3/signer')
   , publicEthereum = require('../lib/request/public_ethereum')
-  , jwtAuth = require('../lib/jwt/jwt_auth')
   , responseHelper = require('../lib/formatter/response')
   , getRawTx = require('../lib/web3/get_raw_tx')
   , web3RpcProvider = require('../lib/web3/rpc_provider');
@@ -20,27 +19,19 @@ const express = require('express')
 
 /* GET users listing. */
 router.post('/whitelist', function (req, res, next) {
-  const encodedParams = req.body.token;
+  const performer = function () {
+    const decodedParams = req.decodedParams
+      , addressToWhiteList = decodedParams.address
+      , phase = decodedParams.phase;
 
-  // for nonce too low error, we will retry once.
-  var retryCount = 0;
-
-  // send error, if token is invalid
-  const jwtOnReject = function (err) {
-    console.error(err);
-    return responseHelper.error('ts_1', 'Invalid token or expired').renderResponse(res);
-  };
-
-  // send request to public ops, if token was valid
-  const jwtOnResolve = function (reqParams) {
-    var addressToWhiteList = reqParams.data.address
-      , phase = reqParams.data.phase;
+    // for nonce too low error, we will retry once.
+    var retryCount = 0;
 
     try {
       // convert the address to checksum.
       addressToWhiteList = web3RpcProvider.utils.toChecksumAddress(addressToWhiteList);
     } catch(err) {
-      return responseHelper.error('ts_1.5', 'Invalid address').renderResponse(res);
+      return responseHelper.error('ts_1', 'Invalid address').renderResponse(res);
     }
 
     // check if address is a valid address
@@ -94,13 +85,7 @@ router.post('/whitelist', function (req, res, next) {
   };
 
   // Verify token
-  Promise.resolve(
-    jwtAuth.verifyToken(encodedParams, 'privateOps')
-      .then(
-        jwtOnResolve,
-        jwtOnReject
-      )
-  ).catch(function(err){
+  Promise.resolve(performer()).catch(function(err){
     console.error(err);
     responseHelper.error('ts_5', 'Something went wrong').renderResponse(res)
   });

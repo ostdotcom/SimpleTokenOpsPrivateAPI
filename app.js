@@ -16,9 +16,10 @@ const express = require('express')
   , sanitizer = require('express-sanitized')
   , app = express()
   , responseHelper = require('./lib/formatter/response')
+  , jwtAuth = require('./lib/jwt/jwt_auth')
   // Address whitelisting route file
-  , tokenSale = require('./routes/token_sale')
-  , index = require('./routes/index');
+  , tokenSaleRoutes = require('./routes/token_sale')
+  , addressRoutes = require('./routes/address');
 
 // uncomment after placing your favicon in /public
 app.use(logger('combined'));
@@ -35,8 +36,47 @@ app.use(express.static(path.join(__dirname, 'public')));
 */
 app.use(sanitizer());
 
-app.use('/token-sale', tokenSale);
-app.use('/', index);
+// before action for verifying the jwt token and setting the decoded info in req obj
+const decodeJwt = function(req, res, next) {
+
+  var token = null;
+  if (req.method == 'POST') {
+    token = req.body.token;
+  } else if (req.method == 'GET') {
+    token = req.query.token;
+  } else {
+    return next();
+  }
+
+  // Set the decoded params in the re and call the next in control flow.
+  const jwtOnResolve = function (reqParams) {
+    req.decodedParams = reqParams.data;
+    // Validation passed.
+    return next();
+  };
+
+  // send error, if token is invalid
+  const jwtOnReject = function (err) {
+    console.error(err);
+    return responseHelper.error('a_1', 'Invalid token or expired').renderResponse(res);
+  };
+
+  // Verify token
+  Promise.resolve(
+    jwtAuth.verifyToken(token, 'privateOps')
+      .then(
+        jwtOnResolve,
+        jwtOnReject
+      )
+  ).catch(function (err) {
+    console.error(err);
+    responseHelper.error('a_2', 'Something went wrong').renderResponse(res)
+  });
+
+};
+
+app.use('/token-sale', decodeJwt, tokenSaleRoutes);
+app.use('/address', decodeJwt, addressRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
