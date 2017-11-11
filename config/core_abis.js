@@ -4,7 +4,8 @@ const core_abis = {
   trustee: require('../abi/Trustee'),
   tokenSale: require('../abi/TokenSale'),
   grantableAllocations: require('../abi/GrantableAllocations'),
-  presales: require('../abi/Presales')
+  presales: require('../abi/Presales'),
+  processableAllocations: require('../abi/ProcessableAllocations')
 };
 
 module.exports = core_abis;

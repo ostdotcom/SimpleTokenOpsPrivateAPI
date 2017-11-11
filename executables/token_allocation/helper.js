@@ -111,7 +111,7 @@ const helper = {
             .then(function(data){console.log(data.data.events_data[0].events);});
           onResolve();
         });
-      }
+      };
 
       for (var i = 0; i < data.length; i++) {
 
@@ -156,6 +156,10 @@ const helper = {
 
         return helper.getTxForPreSaleAllocation(contractName, contractAddress, senderName, dataForTx);
 
+      } else if ('processableAllocations' == coreAddresses.getContractNameFor(contractAddress)) {
+
+        return helper.getTxForProcessableAllocation(contractName, contractAddress, senderName, dataForTx);
+
       }
     }
     throw "Unhandled txType: " + txType + " for contract name: " + contractName + " at address: " + contractAddress;
@@ -175,6 +179,13 @@ const helper = {
       baseAmount = dataForTx[1],
       bonusAmount = dataForTx[2];
     return getRawTx.addPreSaleAllocation(contractName, contractAddress, senderName, receiverAddr, baseAmount, bonusAmount);
+  },
+
+  // Get Raw Transaction for addPresale method
+  getTxForProcessableAllocation: function(contractName, contractAddress, senderName, dataForTx) {
+    var receiverAddr = dataForTx[0],
+      amount = dataForTx[1];
+    return getRawTx.addProcessableAllocations(contractName, contractAddress, senderName, receiverAddr, amount);
   },
 
   // Verify is prompt needed values

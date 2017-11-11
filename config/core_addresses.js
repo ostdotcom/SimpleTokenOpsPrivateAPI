@@ -44,6 +44,10 @@ const allAddresses = {
     presales: {
       address: JSON.parse(process.env.ST_PRESALES_CONTRACT_ADDRS),
       abi: core_abis.presales
+    },
+    processableAllocations: {
+      address: JSON.parse(process.env.ST_PROCESSABLE_ALLOCATIONS_CONTRACT_ADDRS),
+      abi: core_abis.processableAllocations
     }
   }
 };
