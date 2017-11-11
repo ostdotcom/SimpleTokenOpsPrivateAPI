@@ -123,4 +123,4 @@ const processableAllocations = {
 
 };
 
-grantableAllocations.perform();
+processableAllocations.perform();
