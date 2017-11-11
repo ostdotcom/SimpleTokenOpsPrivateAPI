@@ -89,7 +89,7 @@ const coreAddresses = {
   },
 
   getContractNameFor: function(contractAddr) {
-    return addrToContractNameMap[contractAddr.toLowerCase()];
+    return addrToContractNameMap[(contractAddr || '').toLowerCase()];
   },
 
   getAbiForContract: function(contractName) {
