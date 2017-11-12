@@ -5,7 +5,8 @@ const core_abis = {
   tokenSale: require('../abi/TokenSale'),
   grantableAllocations: require('../abi/GrantableAllocations'),
   presales: require('../abi/Presales'),
-  processableAllocations: require('../abi/ProcessableAllocations')
+  processableAllocations: require('../abi/ProcessableAllocations'),
+  multiSigWallet: require('../abi/MultiSigWallet')
 };
 
 module.exports = core_abis;

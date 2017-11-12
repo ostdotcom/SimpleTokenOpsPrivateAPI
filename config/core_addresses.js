@@ -48,6 +48,10 @@ const allAddresses = {
     processableAllocations: {
       address: JSON.parse(process.env.ST_PROCESSABLE_ALLOCATIONS_CONTRACT_ADDRS),
       abi: core_abis.processableAllocations
+    },
+    multiSigWallet: {
+      address: JSON.parse(process.env.ST_MULTI_SIG_WALLET_ADDRS),
+      abi: core_abis.multiSigWallet
     }
   }
 };
