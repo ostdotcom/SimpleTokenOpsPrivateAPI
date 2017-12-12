@@ -32,14 +32,14 @@ const altcoinCalculation = {
 
                 var bonusData = data[i],
                     receiverAddr = bonusData[0].trim(),
-                    tokenName = bonusData[1].trim(),
+                    tokenContractAddress = bonusData[1].trim(),
                     ethAmountInWei = new bigNumber(bonusData[2].trim());
 
-                var tokenData = tokenDetails[tokenName];
+                var tokenData = tokenDetails[tokenContractAddress];
 
                 var altcoinTokenInWei = ethAmountInWei.times(tokenData.ethToTokenRatio).floor().toNumber();
 
-                parsedData.push([receiverAddr, tokenName, ethAmountInWei, altcoinTokenInWei, tokenData.tokenContractAddress]);
+                parsedData.push([receiverAddr, tokenContractAddress, ethAmountInWei, altcoinTokenInWei]);
             }
 
             onResolve(parsedData);
@@ -56,15 +56,13 @@ const altcoinCalculation = {
             for (var i = 0; i < totalEntries; i++) {
 
                 var topkenData = data[i],
-                    tokenName = topkenData[0].trim(),
-                    tokenContractAddress = topkenData[1].trim(),
-                    totalEthSentInWei = new bigNumber(topkenData[2].trim()),
-                    totalTokensReceivedInWei = new bigNumber(topkenData[3].trim());
+                    tokenContractAddress = topkenData[0].trim(),
+                    totalEthSentInWei = new bigNumber(topkenData[1].trim()),
+                    totalTokensReceivedInWei = new bigNumber(topkenData[2].trim());
 
                 var ethToTokenRatio = totalTokensReceivedInWei.dividedBy(totalEthSentInWei);
 
-                var tokenDetail = {tokenContractAddress: tokenContractAddress, ethToTokenRatio: ethToTokenRatio};
-                tokenDetails[tokenName] = tokenDetail;
+                tokenDetails[tokenContractAddress] = ethToTokenRatio;
 
             }
 
@@ -76,7 +74,7 @@ const altcoinCalculation = {
         var stream = fs.createWriteStream("altCoinBonusResults.csv");
         stream.once('open', function (fd) {
             csvData.forEach(function (csvData) {
-                stream.write(csvData[0] + "," + csvData[1] + "," + csvData[2] + "," + csvData[3] + "," + csvData[4] + "\n");
+                stream.write(csvData[0] + "," + csvData[1] + "," + csvData[2] + "," + csvData[3] + "\n");
             });
             stream.end();
         });
