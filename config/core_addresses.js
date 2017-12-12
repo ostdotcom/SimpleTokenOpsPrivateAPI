@@ -18,6 +18,10 @@ const allAddresses = {
     postInitOwner: {
       address: process.env.ST_POST_INIT_OWNER_ADDR,
       passphrase: process.env.ST_POST_INIT_OWNER_PASSPHRASE
+    },
+    altCoinDist: {
+      address: process.env.ST_ALT_COIN_DIST_ADDR,
+      passphrase: process.env.ST_ALT_COIN_DIST_PASSPHRASE
     }
   },
   contracts: {
