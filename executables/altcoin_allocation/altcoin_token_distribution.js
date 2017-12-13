@@ -91,7 +91,7 @@ const _private = {
     return new Promise(function (onResolve, onReject) {
       var prompts = readline.createInterface(process.stdin, process.stdout);
       console.log("Processing:: ", "contractAddr: ", checkSumTokenContractAddr,
-        ", checkSumReceiverAddr: ", checkSumReceiverAddr, ", amount: ", amount);
+        ", checkSumReceiverAddr: ", checkSumReceiverAddr, ", amount: ", amount.toNumber());
 
       prompts.question("Do you want to really do this? [Y/N]",
         function (intent) {
@@ -143,9 +143,9 @@ const altcoinDistribution = {
         , receiverAddr = parsedDataRow[1]
         , amount = parsedDataRow[2];
 
-      await promtForApprovalFor(parsedDataRow);
+      await _private.promtForApprovalFor(parsedDataRow);
 
-      var transactionHash = await distributeFor(parsedDataRow);
+      var transactionHash = await _private.distributeFor(parsedDataRow);
 
       var formattedLine = (receiverAddr + "," + tokenContractAddr + "," + transactionHash + "\n");
 
