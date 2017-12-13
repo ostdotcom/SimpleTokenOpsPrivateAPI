@@ -82,6 +82,8 @@ const altcoinCalculation = {
 
     perform: async function() {
 
+        // check conversion rate unit if wei/eth ??
+
         const altcoinPurchasefilePath = "../../data/altcoin_purchase_data.csv"
         var altcoinPurchaseCsvData = await helper.readCsv(altcoinPurchasefilePath);
 
