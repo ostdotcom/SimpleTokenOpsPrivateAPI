@@ -99,37 +99,20 @@ const helper = {
     });
   },
 
-  distributeTokens: function (distributorName, tokenContractAddress, userBonusData) {
-    return new Promise(async function (onResolve, onReject) {
+  parseResp: function(getTxInfoResponse) {
+    console.log(JSON.stringify(getTxInfoResponse));
 
-      var result = [];
+    return getTxInfoResponse.data.transaction_hash;
+  },
 
-      for (var i = 0; i < userBonusData.length; i++) {
-
-        var userData = userBonusData[i];
-        var userAddress = userData[0];
-        var userBonusAmount = userData[1];
-
-        console.log("Iteration: " + i + " at userAddress: " + userAddress + " userBonusAmount " + userBonusAmount);
-
-
-
-        // Call add data method of contract
-        //await helper.sendTransferTransaction(distributorName, tokenContractAddress, userAddress, userBonusAmount)
-        //    .then(helper.verifyPublicOpsResponse)
-        //    .then(
-        //          function(data) {
-        //            console.log(data);
-        //            result.push(['eth_address', 'contract_address' , i])
-        //          }
-        //    );
-
-        result.push([userAddress, tokenContractAddress , i]);
-
-      }
-      onResolve(result);
-    });
-
+  distributeTokens: function (distributorName, checkSumTokenContractAddr, checkSumReceiverAddr, amount) {
+    return helper.sendTransferTransaction(
+      distributorName,
+      checkSumTokenContractAddr,
+      checkSumReceiverAddr,
+      amount
+    ).then(helper.verifyPublicOpsResponse)
+      .then(helper.parseResp);
   }
 
 };
