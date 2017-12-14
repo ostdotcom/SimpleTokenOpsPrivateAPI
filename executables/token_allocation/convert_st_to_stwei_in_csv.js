@@ -3,6 +3,9 @@ const rootPrefix = '../..'
     , bigNumber = require('bignumber.js')
     , helper = require(rootPrefix+'/executables/token_allocation/helper');
 
+var totatStAmount = new bigNumber(0);
+var totatStAmountInWei = new bigNumber(0);
+
 const convertValuesToWei = {
 
   perform: async function() {
@@ -61,6 +64,9 @@ const _private = {
             amountInST = new bigNumber(rowData[1].trim()),
             amountInSTWei = amountInST.mul(oneSTWei);
 
+        totatStAmount = totatStAmount.plus(amountInST);
+        totatStAmountInWei = totatStAmountInWei.plus(amountInSTWei);
+
         var buffer = [userAddr, amountInSTWei.toString(10)];
 
         if (processName == 'grantable_allocations') {
@@ -70,6 +76,9 @@ const _private = {
         convertedData.push(buffer);
 
       }
+
+      console.log('totatStAmount: ' + totatStAmount.toString(10));
+      console.log('converted totatStAmountInWei: ' + totatStAmountInWei.toString(10));
 
       onResolve(convertedData);
 
