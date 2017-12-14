@@ -1,6 +1,8 @@
 "use strict";
 /*
  * Altcoin Bonus Conversion Calculation
+ * From the input purchased alt coin csv, it calculates the number of ether to tokens ratio.
+ * Then multiply user purchased eth amount with ratio to get user alt bonus token amount.
  *
  * * Author: Aman
  * * Date: 11/12/2017
@@ -84,11 +86,13 @@ const altcoinCalculation = {
 
         // check conversion rate unit if wei/eth ??
 
+        // Columns: Contract Eth address, purchased_ether_amount_in_wei, tokens_purchased_in_wei
         const altcoinPurchasefilePath = "../../data/altcoin_purchase_data.csv"
         var altcoinPurchaseCsvData = await helper.readCsv(altcoinPurchasefilePath);
 
         var tokenDetails = await altcoinCalculation.calculateTokenConversionRation(altcoinPurchaseCsvData);
 
+        // Columns: User Eth address, Contract Eth address, purchased_ether_amount_in_wei
         const altcoinBonusfilePath = "../../data/altcoin_allocations.csv"
         var altcoinBonusCsvData = await helper.readCsv(altcoinBonusfilePath);
 
