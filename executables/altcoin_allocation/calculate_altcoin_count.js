@@ -33,13 +33,13 @@ const altcoinCalculation = {
                 var bonusData = data[i],
                     receiverAddr = bonusData[0].trim(),
                     tokenContractAddress = bonusData[1].trim(),
-                    ethAmountInWei = new bigNumber(bonusData[2].trim());
+                    bonusEthAmountInWei = new bigNumber(bonusData[2].trim());
 
                 var tokenData = tokenDetails[tokenContractAddress];
 
-                var altcoinTokenInWei = ethAmountInWei.times(tokenData.ethToTokenRatio).floor().toNumber();
+                var altcoinTokenInWei = bonusEthAmountInWei.times(tokenData.ethToTokenRatio).floor().toNumber();
 
-                parsedData.push([receiverAddr, tokenContractAddress, ethAmountInWei, altcoinTokenInWei]);
+                parsedData.push([receiverAddr, tokenContractAddress, bonusEthAmountInWei, altcoinTokenInWei]);
             }
 
             onResolve(parsedData);
