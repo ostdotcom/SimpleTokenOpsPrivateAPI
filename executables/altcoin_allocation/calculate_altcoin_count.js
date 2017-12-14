@@ -37,7 +37,7 @@ const altcoinCalculation = {
 
                 var tokenData = tokenDetails[tokenContractAddress];
 
-                var altcoinTokenInWei = bonusEthAmountInWei.times(tokenData.ethToTokenRatio).floor().toNumber();
+                var altcoinTokenInWei = bonusEthAmountInWei.times(tokenData).floor().toNumber();
 
                 parsedData.push([receiverAddr, tokenContractAddress, bonusEthAmountInWei, altcoinTokenInWei]);
             }
