@@ -1,21 +1,32 @@
 
 const rootPrefix = '../..'
     , bigNumber = require('bignumber.js')
-    , helper = require(rootPrefix+'/executables/token_allocation/helper')
-    , filePath = './data/grant_allocations_in_st.csv';
+    , helper = require(rootPrefix+'/executables/token_allocation/helper');
 
 const convertValuesToWei = {
 
   perform: async function() {
 
-    console.log('NOTE: Converting ST to ST Wei in given CSV');
+    var processName = process.argv[2];
 
+    if (!(['grantable_allocations'].includes(processName))) {
+      console.error("Invalid processName: " + processName);
+      process.exit(1);
+    }
+
+    console.log('NOTE: Converting ST to ST Wei for '+ processName);
+
+    var filePath = './data/' + processName + '_in_st.csv'
+
+    console.log('reading from file: ' + filePath);
     var csvData = await helper.readCsv(filePath);
 
-    var convertedCsvData = await _private.validateAndConvert(csvData);
+    console.log('converting data from file: ' + filePath);
+    var convertedCsvData = await _private.validateAndConvert(csvData, processName);
 
+    console.log('converted data from file: ' + filePath);
     convertedCsvData.forEach(function(row){
-      console.log(row[0]+','+row[1].toString(10)+','+row[2]);
+      console.log(row.join(','));
     });
 
   }
@@ -24,7 +35,7 @@ const convertValuesToWei = {
 
 const _private = {
 
-  validateAndConvert: function(csvData){
+  validateAndConvert: function(csvData, processName){
 
     return new Promise(function (onResolve, onReject) {
 
@@ -48,11 +59,15 @@ const _private = {
             userAddr = rowData[0].trim(),
             oneSTWei = new bigNumber('1000000000000000000'),
             amountInST = new bigNumber(rowData[1].trim()),
-            amountInSTWei = amountInST.mul(oneSTWei),
-            isRevokable = rowData[2].trim().toLowerCase();
+            amountInSTWei = amountInST.mul(oneSTWei);
 
-        console.log("parsed validated addrs: " + userAddr + " amount in ST: " + amountInST + " amount in ST Wei: " + amountInSTWei);
-        convertedData.push([userAddr, amountInSTWei, isRevokable]);
+        var buffer = [userAddr, amountInSTWei.toString(10)];
+
+        if (processName == 'grantable_allocations') {
+          buffer.push(rowData[2].trim().toLowerCase());
+        }
+
+        convertedData.push(buffer);
 
       }
 

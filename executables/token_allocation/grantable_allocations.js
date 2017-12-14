@@ -89,7 +89,7 @@ const grantableAllocations = {
 
     const isPromptNeededBool = helper.validateIsPromptNeeded(process.argv[2]);
 
-    const filePath = "../../data/grant_allocations.csv",
+    const filePath = "../../data/grant_allocations_in_stwei.csv",
       contractName = 'grantableAllocations',
       contractAddresses = coreAddresses.getAddressesForContract(contractName),
       maxEntriesPerContract = 35,
