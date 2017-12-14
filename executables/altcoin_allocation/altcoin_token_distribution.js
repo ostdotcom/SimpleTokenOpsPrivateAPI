@@ -76,13 +76,6 @@ const _private = {
     });
   },
 
-  writeToCsv: function (csvData) {
-    csvData.forEach(function (csvData) {
-      var formattedLine = (csvData[0] + "," + csvData[1] + "," + csvData[2] + "\n")
-      fs.appendFileSync("alt_coin_bonus_log_transaction_hash_data.csv", formattedLine);
-    });
-  },
-
   promtForApprovalFor: function (parsedDataRow) {
     var checkSumTokenContractAddr = parsedDataRow[0]
       , checkSumReceiverAddr = parsedDataRow[1]
@@ -95,7 +88,6 @@ const _private = {
 
       prompts.question("Do you want to really do this? [Y/N]",
         function (intent) {
-          console.log("prompts.question :: intent :: ", intent);
           if (intent === 'Y') {
             prompts.close();
             onResolve();
