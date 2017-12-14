@@ -79,13 +79,13 @@ const helper = {
       var txSetInterval = null;
 
       var handleGetTxInfoResponse = function (response) {
-        console.log("getTransactionInfo API response: ");
+        console.log("\n\ngetTransactionInfo API response: ");
         console.log(response);
         if (response.success) {
           clearInterval(txSetInterval);
           onResolve(response);
         } else {
-          console.log('Waiting for ' + publicOpsRespData.transaction_hash + ' to be mined');
+          console.log('\n\nWaiting for ' + publicOpsRespData.transaction_hash + ' to be mined');
         }
       };
 
@@ -101,6 +101,15 @@ const helper = {
 
   parseResp: function(getTxInfoResponse) {
     console.log(JSON.stringify(getTxInfoResponse));
+
+    var events = [];
+    var events_data = getTxInfoResponse.data.events_data;
+
+    for(var i = 0; i < events_data.length ; i++) {
+      events.push(events_data[i].name);
+    }
+
+    console.log("\n\n\t\tEVENTS RECEIVED-" + events  + '\n\n');
 
     return getTxInfoResponse.data.transaction_hash;
   },

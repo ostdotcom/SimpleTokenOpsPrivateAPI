@@ -56,6 +56,10 @@ const allAddresses = {
     multiSigWallet: {
       address: JSON.parse(process.env.ST_MULTI_SIG_WALLET_ADDRS),
       abi: core_abis.multiSigWallet
+    },
+    genericERC20Contract: {
+      address: JSON.parse(process.env.ST_GENERIC_ERC20_CONTRACT_ADDRS),
+      abi: core_abis.genericERC20Contract
     }
   }
 };
