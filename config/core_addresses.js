@@ -18,6 +18,10 @@ const allAddresses = {
     postInitOwner: {
       address: process.env.ST_POST_INIT_OWNER_ADDR,
       passphrase: process.env.ST_POST_INIT_OWNER_PASSPHRASE
+    },
+    altCoinDist: {
+      address: process.env.ST_ALT_COIN_DIST_ADDR,
+      passphrase: process.env.ST_ALT_COIN_DIST_PASSPHRASE
     }
   },
   contracts: {
@@ -52,6 +56,10 @@ const allAddresses = {
     multiSigWallet: {
       address: JSON.parse(process.env.ST_MULTI_SIG_WALLET_ADDRS),
       abi: core_abis.multiSigWallet
+    },
+    genericERC20Contract: {
+      address: JSON.parse(process.env.ST_GENERIC_ERC20_CONTRACT_ADDRS),
+      abi: core_abis.genericERC20Contract
     }
   }
 };
