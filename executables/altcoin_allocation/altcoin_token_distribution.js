@@ -81,24 +81,35 @@ const _private = {
       , checkSumReceiverAddr = parsedDataRow[1]
       , amount = parsedDataRow[2];
 
-    return new Promise(function (onResolve, onReject) {
-      var prompts = readline.createInterface(process.stdin, process.stdout);
-      console.log("Processing:: ", "contractAddr: ", checkSumTokenContractAddr,
+    console.log("Processing:: ", "contractAddr: ", checkSumTokenContractAddr,
         ", checkSumReceiverAddr: ", checkSumReceiverAddr, ", amount: ", amount.toNumber());
 
-      prompts.question("Do you want to really do this? [Y/N]",
-        function (intent) {
-          if (intent === 'Y') {
-            prompts.close();
-            onResolve();
-          } else {
-            console.error('Exiting script.');
-            process.exit(1);
-          }
-        }
-      );
+      var readlineInterface = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+        prompt: 'Do you want to really do this? [Y/N]'
+      });
 
-    });
+      return new Promise( function(onResolve, onReject) {
+        readlineInterface.prompt();
+        const rlCallback = function(line) {
+          line = line.trim().toLowerCase();
+          switch ( line ) {
+            case "y":
+              readlineInterface.removeListener("line", rlCallback);
+              onResolve();
+              break;
+            case "n":
+              console.error("ABORTED OPERATION. BYE");
+              process.exit(0);
+              break;
+            default:
+              console.error("Invalid Input. Supported Inputs: Y/N");
+          }
+        };
+        readlineInterface.on("line", rlCallback);
+      });
+
   },
 
   distributeFor: function (parsedDataRow) {
