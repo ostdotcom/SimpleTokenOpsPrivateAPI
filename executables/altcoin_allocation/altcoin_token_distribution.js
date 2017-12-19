@@ -58,7 +58,7 @@ const _private = {
         }
 
         // amount should be greater than zero
-        if (amount <= 0) {
+        if (amount.equals(0)) {
           console.error("Amount to be transferred should be greater than 0");
           process.exit(1);
         }
@@ -66,9 +66,9 @@ const _private = {
         var checkSumReceiverAddr = web3RpcProvider.utils.toChecksumAddress(receiverAddr);
         var checkSumTokenContractAddr = web3RpcProvider.utils.toChecksumAddress(tokenContractAddr);
 
-        console.log("receiver addrs: " + checkSumReceiverAddr + "token contract addrs: " + checkSumTokenContractAddr + " amount: " + amount);
+        console.log("receiver addrs: " + checkSumReceiverAddr + "token contract addrs: " + checkSumTokenContractAddr + " amount: " + amount.toString(10));
 
-        parsedData.push([checkSumTokenContractAddr, checkSumReceiverAddr, amount]);
+        parsedData.push([checkSumTokenContractAddr, checkSumReceiverAddr, amount.toString(10)]);
 
       }
 
@@ -82,7 +82,7 @@ const _private = {
       , amount = parsedDataRow[2];
 
     console.log("Processing:: ", "contractAddr: ", checkSumTokenContractAddr,
-        ", checkSumReceiverAddr: ", checkSumReceiverAddr, ", amount: ", amount.toNumber());
+        ", checkSumReceiverAddr: ", checkSumReceiverAddr, ", amount: ", amount);
 
       var readlineInterface = readline.createInterface({
         input: process.stdin,
