@@ -12,7 +12,7 @@ const convertValuesToWei = {
 
     var processName = process.argv[2];
 
-    if (!(['grantable_allocations'].includes(processName))) {
+    if (!(['grantable_allocations', 'processable_allocations'].includes(processName))) {
       console.error("Invalid processName: " + processName);
       process.exit(1);
     }
