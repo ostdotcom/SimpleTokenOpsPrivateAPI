@@ -22,6 +22,7 @@ router.post('/whitelist', function (req, res, next) {
   const performer = function () {
     const decodedParams = req.decodedParams
       , phase = decodedParams.phase;
+    var contractAddress = decodedParams.contract_address;
     var addressToWhiteList = decodedParams.address;
 
     // for nonce too low error, we will retry once.
@@ -30,6 +31,7 @@ router.post('/whitelist', function (req, res, next) {
     try {
       // convert the address to checksum.
       addressToWhiteList = web3RpcProvider.utils.toChecksumAddress(addressToWhiteList);
+      contractAddress = web3RpcProvider.utils.toChecksumAddress(contractAddress);
     } catch(err) {
       console.error(err);
       return responseHelper.error('ts_1', 'Invalid address').renderResponse(res);
@@ -46,7 +48,7 @@ router.post('/whitelist', function (req, res, next) {
     }
 
     // generate raw transaction
-    const rawTx = getRawTx.forWhitelisting(addressToWhiteList, phase);
+    const rawTx = getRawTx.forWhitelisting(contractAddress, addressToWhiteList, phase);
 
     // handle final response
     const handlePublicOpsOkResponse = function (publicOpsResp) {
