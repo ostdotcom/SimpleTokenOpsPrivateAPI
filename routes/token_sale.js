@@ -8,20 +8,26 @@
  */
 
 const express = require('express')
-  , router = express.Router()
-  , web3Validator = require('../lib/web3/validator')
-  , web3Signer = require('../lib/web3/signer')
-  , publicEthereum = require('../lib/request/public_ethereum')
-  , responseHelper = require('../lib/formatter/response')
-  , getRawTx = require('../lib/web3/get_raw_tx')
-  , web3RpcProvider = require('../lib/web3/rpc_provider');
+  , router = express.Router();
+
+const rootPrefix = '..'
+  , web3Validator = require(rootPrefix + '/lib/web3/validator')
+  , web3Signer = require(rootPrefix + '/lib/web3/signer')
+  , publicEthereum = require(rootPrefix + '/lib/request/public_ethereum')
+  , responseHelper = require(rootPrefix + '/lib/formatter/response')
+  , getRawTx = require(rootPrefix + '/lib/web3/get_raw_tx')
+  , web3RpcProvider = require(rootPrefix + '/lib/web3/rpc_provider')
+  ;
 
 
 /* GET users listing. */
 router.post('/whitelist', function (req, res, next) {
   const performer = function () {
     const decodedParams = req.decodedParams
-      , phase = decodedParams.phase;
+      , phase = decodedParams.phase
+      ;
+
+    // Get the address of the contract for whitelisting. This will be different for different client.
     var contractAddress = decodedParams.contract_address;
     var addressToWhiteList = decodedParams.address;
 
@@ -29,12 +35,18 @@ router.post('/whitelist', function (req, res, next) {
     var retryCount = 0;
 
     try {
-      // convert the address to checksum.
+      // convert the addresses to checksum.
       addressToWhiteList = web3RpcProvider.utils.toChecksumAddress(addressToWhiteList);
       contractAddress = web3RpcProvider.utils.toChecksumAddress(contractAddress);
     } catch(err) {
       console.error(err);
-      return responseHelper.error('ts_1', 'Invalid address').renderResponse(res);
+      return responseHelper.error(
+        'ts_1',
+        'Invalid address passed. user address: ',
+        addressToWhiteList,
+        ', contract address: ',
+        contractAddress
+      ).renderResponse(res);
     }
 
     // check if address is a valid address

@@ -8,7 +8,6 @@
  */
 const express = require('express')
   , path = require('path')
-  , favicon = require('serve-favicon')
   , logger = require('morgan')
   , cookieParser = require('cookie-parser')
   , bodyParser = require('body-parser')
@@ -21,7 +20,6 @@ const express = require('express')
   , tokenSaleRoutes = require('./routes/token_sale')
   , addressRoutes = require('./routes/address');
 
-// uncomment after placing your favicon in /public
 app.use(logger('combined'));
 app.use(helmet());
 app.use(bodyParser.json());

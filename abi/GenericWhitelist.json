@@ -1,0 +1,61 @@
+[
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_account",
+        "type": "address"
+      },
+      {
+        "name": "_phase",
+        "type": "uint8"
+      }
+    ],
+    "name": "updateWhitelist",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "whitelist",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "_account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "_phase",
+        "type": "uint8"
+      }
+    ],
+    "name": "WhitelistUpdated",
+    "type": "event"
+  }
+]
