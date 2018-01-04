@@ -96,8 +96,8 @@ const helper = {
     });
   },
 
-  // Feed data in contract with Max 35 logic
   processFeedingData: function (contractName, senderName, data, maxEntriesPerContract, contractAddresses) {
+
     return new Promise(async function (onResolve, onReject) {
 
       var contractAddress = null
@@ -131,6 +131,7 @@ const helper = {
       }
 
       onResolve();
+
     });
 
   },
@@ -160,9 +161,20 @@ const helper = {
 
         return helper.getTxForProcessableAllocation(contractName, contractAddress, senderName, dataForTx);
 
+      } else if ('bonuses' == coreAddresses.getContractNameFor(contractAddress)) {
+
+        return helper.getTxForIngestingBonusAllocation(contractName, contractAddress, senderName, dataForTx);
+
       }
+
+    } else if (txType == 'processBonusAllocations') {
+
+      return helper.getTxForProcessingBonusAllocation(contractName, contractAddress, senderName, dataForTx);
+
     }
+
     throw "Unhandled txType: " + txType + " for contract name: " + contractName + " at address: " + contractAddress;
+
   },
 
   // get raw transaction for addGrantableAllocation method
@@ -186,6 +198,17 @@ const helper = {
     var receiverAddr = dataForTx[0],
       amount = dataForTx[1];
     return getRawTx.addProcessableAllocations(contractName, contractAddress, senderName, receiverAddr, amount);
+  },
+
+  getTxForIngestingBonusAllocation: function(contractName, contractAddress, senderName, dataForTx) {
+    var receiverAddr = dataForTx[0],
+        amount = dataForTx[1];
+    return getRawTx.addBonusAllocations(contractName, contractAddress, senderName, receiverAddr, amount);
+  },
+
+  getTxForProcessingBonusAllocation: function(contractName, contractAddress, senderName, dataForTx) {
+    var startIndex = dataForTx;
+    return getRawTx.processBonusAllocations(contractName, contractAddress, senderName, startIndex);
   },
 
   // Verify is prompt needed values

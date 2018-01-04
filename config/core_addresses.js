@@ -60,6 +60,10 @@ const allAddresses = {
     genericERC20Contract: {
       address: JSON.parse(process.env.ST_GENERIC_ERC20_CONTRACT_ADDRS),
       abi: core_abis.genericERC20Contract
+    },
+    bonuses: {
+      address: process.env.ST_BONUS_ALLOCATIONS_CONTRACT_ADDR,
+      abi: core_abis.bonuses
     }
   }
 };

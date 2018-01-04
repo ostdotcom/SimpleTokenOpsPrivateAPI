@@ -7,7 +7,8 @@ const core_abis = {
   presales: require('../abi/Presales'),
   processableAllocations: require('../abi/ProcessableAllocations'),
   multiSigWallet: require('../abi/MultiSigWallet'),
-  genericERC20Contract:  require('../abi/GenericERC20Contract')
+  genericERC20Contract:  require('../abi/GenericERC20Contract'),
+  bonuses: require('../abi/Bonuses')
 };
 
 module.exports = core_abis;

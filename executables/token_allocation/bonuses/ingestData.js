@@ -1,12 +1,12 @@
 "use strict";
 /*
- * Processable Allocations
+ * Bonuses
  *
- * * Author: Alpesh
+ * * Author: Puneet
  * * Date: 11/11/2017
  * * Reviewed by:
  *
- * node grantable_allocation.js bool
+ * node bonuses/ingestData.js bool
  *
  */
 
@@ -16,19 +16,18 @@
 // VALIDATE data
 // TO checksum
 // Prompt for confirmation for feeding
-// Call contract addProcessableAllocation(address _grantee, uint256 _amount) method
+// Call contract add(address _address, uint256 _amount) method
 // Call Lock method
-// Bignumber handling
 
-const coreAddresses = require('../../config/core_addresses')
+const coreAddresses = require('../../../config/core_addresses')
   , readline = require('readline')
   , bigNumber = require('bignumber.js')
-  , web3RpcProvider = require('../../lib/web3/rpc_provider')
-  , helper = require('./helper');
+  , web3RpcProvider = require('../../../lib/web3/rpc_provider')
+  , helper = require('../helper');
 
-const processableAllocations = {
+const ingestBonusesData = {
 
-  validateAndParse: function (data, contractAddresses, maxEntriesPerContract) {
+  validateAndParse: function (data, contractAddress) {
 
     return new Promise(function (onResolve, onReject) {
 
@@ -36,13 +35,6 @@ const processableAllocations = {
 
       if (totalEntries == 0) {
         console.error("No data present in csv!");
-        process.exit(1);
-      }
-
-      const maxContractsNeeded = Math.ceil(totalEntries / maxEntriesPerContract);
-
-      if (contractAddresses.length != maxContractsNeeded) {
-        console.error("Contract addresses count: " + contractAddresses.length + " does not match with maxContractsNeeded: " + maxContractsNeeded);
         process.exit(1);
       }
 
@@ -74,6 +66,7 @@ const processableAllocations = {
       }
 
       onResolve(parsedData);
+
     });
   },
 
@@ -81,20 +74,18 @@ const processableAllocations = {
 
     const isPromptNeededBool = helper.validateIsPromptNeeded(process.argv[2]);
 
-    const filePath = "../../data/processable_allocations_in_stwei.csv",
-      contractName = 'processableAllocations',
-      contractAddresses = coreAddresses.getAddressesForContract(contractName),
-      maxEntriesPerContract = 35,
+    const filePath = "../../../data/bonuses_in_stwei.csv",
+      contractName = 'bonuses',
+      contractAddress = coreAddresses.getAddressForContract(contractName),
       senderName = 'postInitOwner';
 
     var csvData = await helper.readCsv(filePath);
 
-    var parsedCsvData = await processableAllocations.validateAndParse(csvData, contractAddresses, maxEntriesPerContract);
+    var parsedCsvData = await ingestBonusesData.validateAndParse(csvData, contractAddress);
 
-    console.log("Max Entries " + maxEntriesPerContract + " will be entered per Contract");
     console.log("Total Entries to process: " + parsedCsvData.length);
     console.log("Sender Name: "+ senderName + " address: " + coreAddresses.getAddressForUser(senderName));
-    console.log("All Contract Addresses: " + contractAddresses);
+    console.log("Contract Address: " + contractAddress);
 
     if (isPromptNeededBool) {
 
@@ -105,7 +96,7 @@ const processableAllocations = {
           prompts.question("Do you want to really do this? [Y/N]",
             function (intent) {
               if (intent === 'Y') {
-                console.log("Initiating ProcessableAllocations script for contract: " + contractName);
+                console.log("Initiating ingesting bonus data script on contract: " + contractName);
                 prompts.close();
                 onResolve();
               } else {
@@ -118,9 +109,10 @@ const processableAllocations = {
       );
     }
 
-    await helper.processFeedingData(contractName, senderName, parsedCsvData, maxEntriesPerContract, contractAddresses);
+    await helper.processFeedingData(contractName, senderName, parsedCsvData, 1000000000000, [contractAddress]);
+
   }
 
 };
 
-processableAllocations.perform();
+ingestBonusesData.perform();
