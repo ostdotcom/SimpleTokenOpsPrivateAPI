@@ -63,15 +63,16 @@ const _private = {
 
     while (fromIndex < toIndex) {
 
-      console.log('starting process iteration: ' + iterationCount);
+      console.log('starting process iteration: ' + iterationCount + ' with fromIndex : ' + fromIndex);
 
       var batchResponse = await helper.sendTransaction(
           'processBonusAllocations', contractName, contractAddress, senderName, fromIndex
       ).then(helper.verifyPublicOpsResponse);
 
       nextStartIndex = await _private.getStartIndex();
+      console.log("nextStartIndex : " + nextStartIndex);
 
-      if (fromIndex == 0) {
+      if (nextStartIndex == 0) {
         // this is returned as 0 also when everything is processed
         nextStartIndex = toIndex;
       }
@@ -177,6 +178,7 @@ const processIngestedData = {
     console.log(senderName + " Address: " + sendeAddress);
     console.log("Bonus Contract Address: " + contractAddress);
     console.log("ST Contract Address: " + STContractAddress);
+    console.log("start idex would be : " + await _private.getStartIndex());
 
     console.log('starting data verification before processing');
     await _private.verifyContractDataBeforeProcessing();
