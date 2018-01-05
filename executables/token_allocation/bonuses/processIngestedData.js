@@ -24,6 +24,8 @@ const rootPrefix = '../../..'
     , STContractAddress = coreAddresses.getAddressForContract('simpleToken')
 ;
 
+var allAddressesArray = [];
+
 const _private = {
 
   verifyContractDataBeforeProcessing: async function() {
@@ -32,6 +34,14 @@ const _private = {
     console.log("addressesSize : " + addressesSize);
     if (addressesSize == 0) {
       console.error('nothing to process as addressesSize == 0');
+      process.exit(1);
+    }
+
+    allAddressesArray = await _private.getAddressesForBonuses();
+
+    const addressesSizeFromList = allAddressesArray.length;
+    if (addressesSize != addressesSizeFromList) {
+      console.error('mismatch in addressesSize, addressesSizeFromList: ' + addressesSizeFromList);
       process.exit(1);
     }
 
@@ -72,11 +82,6 @@ const _private = {
       nextStartIndex = await _private.getStartIndex();
       console.log("nextStartIndex : " + nextStartIndex);
 
-      if (nextStartIndex == 0) {
-        // this is returned as 0 also when everything is processed
-        nextStartIndex = toIndex;
-      }
-
       if (!_private.verifyBatchResponse(batchResponse, nextStartIndex - fromIndex)) {
         process.exit(1);
       }
@@ -103,6 +108,11 @@ const _private = {
   getAddressesSizeForBonuses: async function() {
     var rsp = await publicEthereum.getAddressesSizeForBonuses();
     return rsp.data.size;
+  },
+
+  getAddressesForBonuses: async function() {
+    var rsp = await publicEthereum.getAddressesForBonuses();
+    return rsp.data.addresses;
   },
 
   getBonusesContractStatus: async function() {
@@ -150,20 +160,43 @@ const _private = {
     const eventsData = lastBatchRsp.data.events_data
         , lastEventData = eventsData[eventsData.length - 1];
 
+    console.log('Checking For Completed Event');
     if (lastEventData.name != 'Completed') {
       console.error('last event name is not Completed but is : ' + lastEventData.name);
       console.error(lastEventData);
     }
 
+    console.log('checking for remainingTotalBonuses == 0');
     const remainingTotalBonuses = await _private.getRemainingTotalBonuses();
     if (remainingTotalBonuses != 0) {
       console.error('remainingTotalBonuses is non zero: ' + remainingTotalBonuses);
     }
 
+    console.log('checking for status of bonuses contract');
     const bonusesContractStatus = await _private.getBonusesContractStatus();
     if (bonusesContractStatus != 3) {
       console.error('bonusesContractStatus != 3. Value: ' + bonusesContractStatus);
     }
+
+    console.log('checking for status of all entries in contract');
+
+    var promiseResolvers = [];
+    for (var i = 0; i < allAddressesArray.length; i++) {
+      var address = allAddressesArray[i];
+      promiseResolvers.push(publicEthereum.getProcessableStatus(address));
+    }
+    var processableStatusesResponses = await Promise.all(promiseResolvers);
+
+    var failedAddressLogs = {};
+    for (var i = 0; i < processableStatusesResponses.length; i++) {
+      var processableStatus = processableStatusesResponses[i]
+          , address = allAddressesArray[i];
+      if (!processableStatus.processed) {
+        failedAddressLogs[address] = processableStatus;
+      }
+    }
+
+    console.error(failedAddressLogs);
 
     console.log('validation done. check error logs above (if any)');
 
