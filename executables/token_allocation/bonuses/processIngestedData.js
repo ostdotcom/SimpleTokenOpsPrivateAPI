@@ -134,7 +134,6 @@ const _private = {
 
     for (var i = 0; i < eventsData.length; i++) {
       var eventData = eventsData[i];
-      console.log(eventData);
       if (eventData.name == 'BonusProcessed') {
         bonusProcessedEventsCount = bonusProcessedEventsCount + 1;
       }
