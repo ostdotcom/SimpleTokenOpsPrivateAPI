@@ -188,7 +188,7 @@ const _private = {
 
     var failedAddressLogs = {};
     for (var i = 0; i < processableStatusesResponses.length; i++) {
-      var processableStatus = processableStatusesResponses[i]
+      var processableStatus = processableStatusesResponses[i].data.processableStatus
           , address = allAddressesArray[i];
       if (!processableStatus.processed) {
         failedAddressLogs[address] = processableStatus;
