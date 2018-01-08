@@ -34,7 +34,7 @@ const allAddresses = {
       abi: core_abis.tokenSale
     },
     genericWhitelist: {
-      address: process.env.ST_GENERIC_WHITELIST_CONTRACT_ADDRS,
+      address: JSON.parse(process.env.ST_GENERIC_WHITELIST_CONTRACT_ADDRS),
       abi: core_abis.genericWhitelist
     },
     trustee: {
