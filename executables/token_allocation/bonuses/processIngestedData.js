@@ -6,7 +6,7 @@
  * * Date: 11/11/2017
  * * Reviewed by:
  *
- * node bonuses/processIngestedData.js true
+ * node processIngestedData.js 1 true
  *
  */
 
@@ -17,31 +17,25 @@ const rootPrefix = '../../..'
     , web3RpcProvider = require(rootPrefix + '/lib/web3/rpc_provider')
     , publicEthereum = require(rootPrefix + '/lib/request/public_ethereum')
     , helper = require('../helper')
-    , senderName = 'postInitOwner'
     , contractName = 'bonuses'
-    , sendeAddress = coreAddresses.getAddressForUser(senderName)
     , contractAddresses = coreAddresses.getAddressesForContract(contractName)
     , STContractAddress = coreAddresses.getAddressForContract('simpleToken')
 ;
 
-var allAddressesArray = [];
+var processablesSize = null
+    , senderName = null
+    , senderAddress = null
+    , contractAddress = null;
 
 const _private = {
 
   verifyContractDataBeforeProcessing: async function() {
 
-    const addressesSize = await _private.getProcessablesSizeForBonuses() ;
-    console.log("addressesSize : " + addressesSize);
-    if (addressesSize == 0) {
-      console.error('nothing to process as addressesSize == 0');
-      process.exit(1);
-    }
+    processablesSize = await _private.getProcessablesSizeForBonuses() ;
 
-    allAddressesArray = await _private.getAddressesForBonuses();
-
-    const addressesSizeFromList = allAddressesArray.length;
-    if (addressesSize != addressesSizeFromList) {
-      console.error('mismatch in addressesSize, addressesSizeFromList: ' + addressesSizeFromList);
+    console.log("processablesSize : " + processablesSize);
+    if (processablesSize == 0) {
+      console.error('nothing to process as processablesSize == 0');
       process.exit(1);
     }
 
@@ -96,28 +90,27 @@ const _private = {
   },
 
   getStartIndex: async function() {
-    var rsp = await publicEthereum.getStartIndexForProcessingBonuses();
+    var rsp = await publicEthereum.getStartIndexForProcessingBonuses(contractAddress);
     return rsp.data.startIndex;
   },
 
   getRemainingTotalBonuses: async function() {
-    var rsp = await publicEthereum.getRemainingTotalBonuses();
+    var rsp = await publicEthereum.getRemainingTotalBonuses(contractAddress);
     return rsp.data.remainingTotalBonuses;
   },
 
   getProcessablesSizeForBonuses: async function() {
-    var rsp = await publicEthereum.getProcessablesSizeForBonuses();
+    var rsp = await publicEthereum.getProcessablesSizeForBonuses(contractAddress);
     return rsp.data.size;
   },
 
-  getAddressesForBonuses: async function() {
-    var rsp = await publicEthereum.getAddressesForBonuses();
-    return rsp.data.addresses;
+  getBonusesContractStatus: async function() {
+    var rsp = await publicEthereum.getBonusesContractStatus(contractAddress);
+    return rsp.data.status;
   },
 
-  getBonusesContractStatus: async function() {
-    var rsp = await publicEthereum.getBonusesContractStatus();
-    return rsp.data.status;
+  getProcessableStatus: function(index) {
+    publicEthereum.getProcessableStatus(index, contractAddress);
   },
 
   verifyBatchResponse: function(batchResponse, countProcessed) {
@@ -180,9 +173,8 @@ const _private = {
     console.log('checking for status of all entries in contract');
 
     var promiseResolvers = [];
-    for (var i = 0; i < allAddressesArray.length; i++) {
-      var address = allAddressesArray[i];
-      promiseResolvers.push(publicEthereum.getProcessableStatus(address));
+    for (var i = 0; i < processablesSize; i++) {
+      promiseResolvers.push(_private.getProcessableStatus(i));
     }
     var processableStatusesResponses = await Promise.all(promiseResolvers);
 
@@ -207,15 +199,20 @@ const processIngestedData = {
 
   perform: async function() {
 
-    console.log(senderName + " Address: " + sendeAddress);
+    const isPromptNeededBool = helper.validateIsPromptNeeded(process.argv[3])
+        , contractIndex = parseInt(process.argv[2]);
+
+    contractAddress = contractAddresses[contractIndex-1];
+    senderName = coreAddresses.bonusContractUserNamePrefix + contractIndex;
+    senderAddress = coreAddresses.getAddressForUser(senderName);
+
+    console.log(senderName + " Address: " + senderAddress);
     console.log("Bonus Contract Address: " + contractAddress);
     console.log("ST Contract Address: " + STContractAddress);
-    console.log("start idex would be : " + await _private.getStartIndex());
+    console.log("start idex would be : " + await _private.getStartIndex(contractAddress));
 
     console.log('starting data verification before processing');
     await _private.verifyContractDataBeforeProcessing();
-
-    const isPromptNeededBool = helper.validateIsPromptNeeded(process.argv[2]);
 
     if (isPromptNeededBool) {
 
