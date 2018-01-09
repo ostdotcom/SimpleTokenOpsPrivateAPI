@@ -139,7 +139,7 @@ const ingestBonusesData = {
   },
 
   getIngestedRowsCount: async function(contractAddress) {
-    var rsp = await publicEthereum.getAddressesSizeForBonuses(contractAddress);
+    var rsp = await publicEthereum.getProcessablesSizeForBonuses(contractAddress);
     return rsp.data.size;
   },
 

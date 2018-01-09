@@ -30,7 +30,7 @@ const _private = {
 
   verifyContractDataBeforeProcessing: async function() {
 
-    const addressesSize = await _private.getAddressesSizeForBonuses() ;
+    const addressesSize = await _private.getProcessablesSizeForBonuses() ;
     console.log("addressesSize : " + addressesSize);
     if (addressesSize == 0) {
       console.error('nothing to process as addressesSize == 0');
@@ -63,7 +63,7 @@ const _private = {
 
   processBonusesInBatches: async function() {
 
-    const toIndex = await _private.getAddressesSizeForBonuses();
+    const toIndex = await _private.getProcessablesSizeForBonuses();
 
     var fromIndex = await _private.getStartIndex()
         , nextStartIndex = undefined
@@ -105,8 +105,8 @@ const _private = {
     return rsp.data.remainingTotalBonuses;
   },
 
-  getAddressesSizeForBonuses: async function() {
-    var rsp = await publicEthereum.getAddressesSizeForBonuses();
+  getProcessablesSizeForBonuses: async function() {
+    var rsp = await publicEthereum.getProcessablesSizeForBonuses();
     return rsp.data.size;
   },
 
