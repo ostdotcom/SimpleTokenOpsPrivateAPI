@@ -20,7 +20,7 @@ const rootPrefix = '../../..'
     , senderName = 'postInitOwner'
     , contractName = 'bonuses'
     , sendeAddress = coreAddresses.getAddressForUser(senderName)
-    , contractAddress = coreAddresses.getAddressForContract(contractName)
+    , contractAddresses = coreAddresses.getAddressesForContract(contractName)
     , STContractAddress = coreAddresses.getAddressForContract('simpleToken')
 ;
 

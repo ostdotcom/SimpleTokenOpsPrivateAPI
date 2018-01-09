@@ -10,12 +10,16 @@
 
 const helper = require('./helper')
   , coreAddresses = require('../../config/core_addresses')
-  , contractName = 'bonuses';
+  , contractName = 'bonuses'
+  , bonusContractUserNamePrefix = coreAddresses.bonusContractUserNamePrefix;
 
-var contractAddress = coreAddresses.getAddressForContract(contractName);
+var contractAddresses = coreAddresses.getAddressesForContract(contractName);
 
-var main = async function () {
-  await helper.performFor(contractName, contractAddress) ;
+var loop = async function () {
+  for(var i = 0; i < contractAddresses.length; i++) {
+    var senderName = bonusContractUserNamePrefix + (i+1);
+    await helper.performFor(contractName, contractAddresses[i], senderName);
+  }
 }
 
-main();
+loop();

@@ -6,15 +6,14 @@
  * * Date: 11/11/2017
  * * Reviewed by:
  *
- * node bonuses/ingestData.js bool
+ * node ingestData.js 1 true
  *
  */
 
 // STEPS
 //
-// READ CSV
+// READ CSV (using index. index starts from 1)
 // VALIDATE data
-// TO checksum
 // Prompt for confirmation for feeding
 // Call contract add(address _address, uint256 _amount) method
 // Call Lock method
@@ -23,7 +22,8 @@ const coreAddresses = require('../../../config/core_addresses')
   , readline = require('readline')
   , bigNumber = require('bignumber.js')
   , web3RpcProvider = require('../../../lib/web3/rpc_provider')
-  , helper = require('../helper');
+  , helper = require('../helper')
+  , publicEthereum = require('../../../lib/request/public_ethereum');
 
 const ingestBonusesData = {
 
@@ -38,7 +38,9 @@ const ingestBonusesData = {
         process.exit(1);
       }
 
-      var parsedData = [];
+      var addresses = []
+          , amounts = [];
+
       for (var i = 0; i < totalEntries; i++) {
 
         // Continue if blank value
@@ -61,31 +63,117 @@ const ingestBonusesData = {
         }
 
         var checkSumAddr = web3RpcProvider.utils.toChecksumAddress(receiverAddr);
-        console.log("parsed validated addrs: " + checkSumAddr + " amount: " + amount.toString(10));
-        parsedData.push([checkSumAddr, amount]);
+        // console.log("parsed validated addrs: " + checkSumAddr + " amount: " + amount.toString(10));
+        addresses.push(checkSumAddr);
+        amounts.push(amount);
       }
 
-      onResolve(parsedData);
+      onResolve({
+        addresses: addresses,
+        amounts: amounts
+      });
 
     });
   },
 
+  callLockContract: function (contractName, senderName, contractAddress) {
+    return new Promise(async function (onResolve, onReject) {
+      console.log("\nInitiating locking of contract address: " + contractAddress + " for contract name: " + contractName + " for sender name: " + senderName);
+      await helper.sendTransaction('callLockContract', contractName, contractAddress, senderName, [])
+          .then(helper.verifyPublicOpsResponse)
+          .then(function(data){console.log(data.data.events_data[0].events);});
+      onResolve();
+    });
+  },
+
+  processIngestingData: function (contractName, senderName, addresses, amounts, contractAddress) {
+
+    return new Promise(async function (onResolve, onReject) {
+
+      var startIndex = 0
+          , endIndex = addresses.length
+          , maxPerTransaction = 200;
+
+      console.log('endIndex: ' + endIndex);
+
+      while (startIndex < endIndex) {
+
+        console.log("Iteration starting with startIndex: " + startIndex);
+
+        var addressesVar = addresses.slice(startIndex, startIndex + maxPerTransaction);
+        var amountsVar = amounts.slice(startIndex, startIndex + maxPerTransaction);
+
+        var dataForTx = {
+          addresses: addressesVar,
+          amounts: amountsVar
+        }
+            , processedCount = null;
+
+        // Call add data method of contract
+        // This method DOES NOT RAISE EVENTS
+        await helper.sendTransaction('callAddData', contractName, contractAddress, senderName, dataForTx)
+            .then(helper.verifyPublicOpsResponse)
+            .then(function(data){
+              var eventsData = data.data.events_data[0].events[0];
+              console.log(eventsData);
+              processedCount = parseInt(eventsData.value) + 1;
+            });
+
+        if (processedCount == 1) {
+          console.error('something went wrong as processedCount == 1');
+          process.exit(1);
+        }
+
+        startIndex = startIndex + processedCount;
+        console.log('newStartIndex: ' + startIndex);
+
+      }
+
+      // Call lock method of contracts
+      await ingestBonusesData.callLockContract(contractName, senderName, contractAddress);
+
+      onResolve();
+
+    });
+
+  },
+
+  getIngestedRowsCount: async function(contractAddress) {
+    var rsp = await publicEthereum.getAddressesSizeForBonuses(contractAddress);
+    return rsp.data.size;
+  },
+
   perform: async function() {
 
-    const isPromptNeededBool = helper.validateIsPromptNeeded(process.argv[2]);
+    const contractIndex = parseInt(process.argv[2])
+        , isPromptNeededBool = helper.validateIsPromptNeeded(process.argv[3]);
 
-    const filePath = "../../../data/bonuses_in_stwei.csv",
+    const filePath = "../../../data/bonuses_" + contractIndex + "_in_stwei.csv",
       contractName = 'bonuses',
-      contractAddress = coreAddresses.getAddressForContract(contractName),
-      senderName = 'postInitOwner';
+      contractAddresses = coreAddresses.getAddressesForContract(contractName),
+      contractAddress = contractAddresses[contractIndex-1],
+      senderNamePrefix = coreAddresses.bonusContractUserNamePrefix,
+      senderName = senderNamePrefix + contractIndex;
+
+    console.log("Sender Name: "+ senderName + " address: " + coreAddresses.getAddressForUser(senderName));
+    console.log("Contract Address: " + contractAddress);
+    console.log("filePath: " + filePath);
 
     var csvData = await helper.readCsv(filePath);
 
-    var parsedCsvData = await ingestBonusesData.validateAndParse(csvData, contractAddress);
+    var parsedCsvData = await ingestBonusesData.validateAndParse(csvData, contractAddress)
+    , addresses = parsedCsvData.addresses
+    , amounts = parsedCsvData.amounts
+    , addressesLength = addresses.length
+    , amountsLength = amounts.length;
 
-    console.log("Total Entries to process: " + parsedCsvData.length);
-    console.log("Sender Name: "+ senderName + " address: " + coreAddresses.getAddressForUser(senderName));
-    console.log("Contract Address: " + contractAddress);
+    console.log("Total addresses length: " + addressesLength);
+    console.log("Total amounts length: " + amountsLength);
+
+    if (amountsLength != addressesLength) {
+      console.error('addresses & amounts length mismatch');
+      process.exit(1);
+    }
 
     if (isPromptNeededBool) {
 
@@ -109,7 +197,7 @@ const ingestBonusesData = {
       );
     }
 
-    await helper.processFeedingData(contractName, senderName, parsedCsvData, 1000000000000, [contractAddress]);
+    await ingestBonusesData.processIngestingData(contractName, senderName, addresses, amounts, contractAddress);
 
   }
 

@@ -201,9 +201,7 @@ const helper = {
   },
 
   getTxForIngestingBonusAllocation: function(contractName, contractAddress, senderName, dataForTx) {
-    var receiverAddr = dataForTx[0],
-        amount = dataForTx[1];
-    return getRawTx.addBonusAllocations(contractName, contractAddress, senderName, receiverAddr, amount);
+    return getRawTx.addBonusAllocations(contractName, contractAddress, senderName, dataForTx);
   },
 
   getTxForProcessingBonusAllocation: function(contractName, contractAddress, senderName, dataForTx) {

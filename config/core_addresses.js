@@ -10,6 +10,7 @@
 const core_abis = require('./core_abis');
 
 const allAddresses = {
+
   users: {
     whitelister: {
       address: process.env.ST_WHITELIST_ACCOUNT_ADDR,
@@ -24,6 +25,7 @@ const allAddresses = {
       passphrase: process.env.ST_ALT_COIN_DIST_PASSPHRASE
     }
   },
+
   contracts: {
     simpleToken: {
       address: process.env.ST_SIMPLE_TOKEN_CONTRACT_ADDR,
@@ -62,11 +64,22 @@ const allAddresses = {
       abi: core_abis.genericERC20Contract
     },
     bonuses: {
-      address: process.env.ST_BONUS_ALLOCATIONS_CONTRACT_ADDR,
+      address: JSON.parse(process.env.ST_BONUS_ALLOCATIONS_CONTRACT_ADDRS),
       abi: core_abis.bonuses
     }
   }
+
 };
+
+const bonusContractUserNamePrefix = 'bonusContractUser'
+    , bonusContractOwners = JSON.parse(process.env.ST_BONUS_CONTRACT_OWNER_ADDRS);
+
+for(var i = 1; i <= bonusContractOwners.length; i++ ) {
+  allAddresses.users[bonusContractUserNamePrefix+i] = {
+    address: bonusContractOwners[i-1],
+    passphrase: process.env.ST_BONUS_CONTRACT_OWNER_PASSPHRASE
+  }
+}
 
 const addrToContractNameMap = {};
 
@@ -83,6 +96,9 @@ for(var contractName in allAddresses.contracts) {
 }
 
 const coreAddresses = {
+
+  bonusContractUserNamePrefix: bonusContractUserNamePrefix,
+
   getAddressForUser: function(userName){
     return allAddresses.users[userName].address;
   },
@@ -115,6 +131,7 @@ const coreAddresses = {
   getAbiForContract: function(contractName) {
     return allAddresses.contracts[contractName].abi;
   }
+
 };
 
 module.exports = coreAddresses;
