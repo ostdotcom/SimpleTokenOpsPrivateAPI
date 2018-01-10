@@ -22,6 +22,10 @@ const allAddresses = {
     altCoinDist: {
       address: process.env.ST_ALT_COIN_DIST_ADDR,
       passphrase: process.env.ST_ALT_COIN_DIST_PASSPHRASE
+    },
+    coinBase: {
+      address: process.env.ST_COIN_BASE_ADDR,
+      passphrase: process.env.ST_COIN_BASE_PASSPHRASE
     }
   },
   contracts: {
