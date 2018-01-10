@@ -60,14 +60,14 @@ const _private = {
     const toIndex = await _private.getProcessablesSizeForBonuses();
 
     var fromIndex = await _private.getStartIndex()
-        , nextStartIndex = undefined
+        , nextStartIndex = 0
         , batchResponse = {}
         , iterationCount = 1
     ;
 
     while (fromIndex < toIndex) {
 
-      console.log('starting process iteration: ' + iterationCount + ' with fromIndex : ' + fromIndex);
+      console.log('starting process iteration: ' + iterationCount + ' with fromIndex : ' + fromIndex + ' toIndex: ' + toIndex);
 
       var batchResponse = await helper.sendTransaction(
           'processBonusAllocations', contractName, contractAddress, senderName, fromIndex
@@ -114,6 +114,11 @@ const _private = {
   },
 
   verifyBatchResponse: function(batchResponse, countProcessed) {
+
+    if (countProcessed == 0) {
+      console.error('countProcessed: 0');
+      return false;
+    }
 
     const eventsData = batchResponse.data.events_data;
 

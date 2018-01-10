@@ -63,7 +63,7 @@ const ingestBonusesData = {
         }
 
         var checkSumAddr = web3RpcProvider.utils.toChecksumAddress(receiverAddr);
-        // console.log("parsed validated addrs: " + checkSumAddr + " amount: " + amount.toString(10));
+        console.log("parsed validated addrs: " + checkSumAddr + " amount: " + amount.toString(10));
         addresses.push(checkSumAddr);
         amounts.push(amount);
       }
@@ -136,11 +136,6 @@ const ingestBonusesData = {
 
     });
 
-  },
-
-  getIngestedRowsCount: async function(contractAddress) {
-    var rsp = await publicEthereum.getProcessablesSizeForBonuses(contractAddress);
-    return rsp.data.size;
   },
 
   perform: async function() {
