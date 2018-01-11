@@ -79,7 +79,7 @@ const preSaleAllocations = {
         }
 
         var checkSumAddr = web3RpcProvider.utils.toChecksumAddress(receiverAddr);
-        console.log("parsed validated addrs: " + checkSumAddr + " base amount: " + baseAmount + " bonus amount: " + bonusAmount);
+        console.log("parsed validated addrs: " + checkSumAddr + " base amount: " + baseAmount + " bonus amount: " + bonusAmount.toString(10));
         parsedData.push([checkSumAddr, baseAmount, bonusAmount]);
       }
       onResolve(parsedData);
@@ -90,7 +90,7 @@ const preSaleAllocations = {
 
     const isPromptNeededBool = helper.validateIsPromptNeeded(process.argv[2]);
 
-    const filePath = "../../data/pre_sales.csv",
+    const filePath = "../../data/pre_sales_in_stwei.csv",
       contractName = 'presales',
       contractAddresses = coreAddresses.getAddressesForContract(contractName),
       maxEntriesPerContract = 35,

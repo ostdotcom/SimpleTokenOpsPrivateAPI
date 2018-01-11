@@ -69,7 +69,7 @@ const processableAllocations = {
         }
 
         var checkSumAddr = web3RpcProvider.utils.toChecksumAddress(receiverAddr);
-        console.log("parsed validated addrs: " + checkSumAddr + " amount: " + amount);
+        console.log("parsed validated addrs: " + checkSumAddr + " amount: " + amount.toString(10));
         parsedData.push([checkSumAddr, amount]);
       }
 
@@ -81,7 +81,7 @@ const processableAllocations = {
 
     const isPromptNeededBool = helper.validateIsPromptNeeded(process.argv[2]);
 
-    const filePath = "../../data/processable_allocations.csv",
+    const filePath = "../../data/processable_allocations_in_stwei.csv",
       contractName = 'processableAllocations',
       contractAddresses = coreAddresses.getAddressesForContract(contractName),
       maxEntriesPerContract = 35,

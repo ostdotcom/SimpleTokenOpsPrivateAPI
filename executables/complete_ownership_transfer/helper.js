@@ -17,6 +17,7 @@ const _private = {
 
   // Complete Ownership Transfer (claim the ownership)
   completeOwnershipTransferFor: function (contractName, contractAddr, senderName) {
+
     if (coreAddresses.getContractNameFor(contractAddr) != contractName) {
       throw 'Contract name: ' + contractName + ' and contract addr: ' + contractAddr + ' dont match.';
     }
@@ -75,10 +76,14 @@ const _private = {
 };
 
 const helper = {
-  performFor: async function(contractName, contractAddr) {
 
-    var prompts = readline.createInterface(process.stdin, process.stdout),
+  performFor: async function(contractName, contractAddr, senderName) {
+
+    var prompts = readline.createInterface(process.stdin, process.stdout);
+
+    if (!senderName) {
       senderName = 'postInitOwner';
+    }
 
     console.log(senderName + ' Address: ' + coreAddresses.getAddressForUser(senderName));
     console.log('Claiming ownership of contract "' + contractName + '" at address: ' + contractAddr);
@@ -103,7 +108,9 @@ const helper = {
     return _private.completeOwnershipTransferFor(contractName, contractAddr, senderName)
       .then(_private.verifyPublicOpsResponse)
       .then(function(data){console.log(data.data.events_data[0].events);});
+
   }
+
 };
 
 module.exports = helper;
