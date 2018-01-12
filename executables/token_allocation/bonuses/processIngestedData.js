@@ -109,10 +109,6 @@ const _private = {
     return rsp.data.status;
   },
 
-  getProcessableStatus: function(index) {
-    publicEthereum.getProcessableStatus(index, contractAddress);
-  },
-
   verifyBatchResponse: function(batchResponse, countProcessed) {
 
     if (countProcessed == 0) {
@@ -174,25 +170,6 @@ const _private = {
     if (bonusesContractStatus != 3) {
       console.error('bonusesContractStatus != 3. Value: ' + bonusesContractStatus);
     }
-
-    console.log('checking for status of all entries in contract');
-
-    var promiseResolvers = [];
-    for (var i = 0; i < processablesSize; i++) {
-      promiseResolvers.push(_private.getProcessableStatus(i));
-    }
-    var processableStatusesResponses = await Promise.all(promiseResolvers);
-
-    var failedAddressLogs = {};
-    for (var i = 0; i < processableStatusesResponses.length; i++) {
-      var processableStatus = processableStatusesResponses[i].data.processableStatus
-          , address = allAddressesArray[i];
-      if (!processableStatus.processed) {
-        failedAddressLogs[address] = processableStatus;
-      }
-    }
-
-    console.error(failedAddressLogs);
 
     console.log('validation done. check error logs above (if any)');
 
