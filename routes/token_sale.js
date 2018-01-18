@@ -28,6 +28,7 @@ router.post('/whitelist', function (req, res, next) {
       ;
 
     // Get the address of the contract for whitelisting. This will be different for different client.
+    var whitelisterAddress = decodedParams.whitelister_address;
     var contractAddress = decodedParams.contract_address;
     var addressToWhiteList = decodedParams.address;
 
@@ -38,6 +39,7 @@ router.post('/whitelist', function (req, res, next) {
       // convert the addresses to checksum.
       addressToWhiteList = web3RpcProvider.utils.toChecksumAddress(addressToWhiteList);
       contractAddress = web3RpcProvider.utils.toChecksumAddress(contractAddress);
+      whitelisterAddress = web3RpcProvider.utils.toChecksumAddress(whitelisterAddress);
     } catch(err) {
       console.error(err);
       return responseHelper.error(
@@ -49,9 +51,14 @@ router.post('/whitelist', function (req, res, next) {
       ).renderResponse(res);
     }
 
+    // check if whitelister address is valid
+    if (!web3Validator.isWhitelisterAddress(whitelisterAddress)) {
+      return responseHelper.error('ts_1.1', 'Whitelist address is invalid.').renderResponse(res);
+    }
+
     // check if address is a valid address
     if (!web3Validator.isAddress(addressToWhiteList)) {
-      return responseHelper.error('ts_2', 'Whitelist address is invalid.').renderResponse(res);
+      return responseHelper.error('ts_2', 'Ethereum address is invalid.').renderResponse(res);
     }
 
     // check if phase is valid
@@ -60,7 +67,7 @@ router.post('/whitelist', function (req, res, next) {
     }
 
     // generate raw transaction
-    const rawTx = getRawTx.forWhitelisting(contractAddress, addressToWhiteList, phase);
+    const rawTx = getRawTx.forWhitelisting(whitelisterAddress, contractAddress, addressToWhiteList, phase);
 
     // handle final response
     const handlePublicOpsOkResponse = function (publicOpsResp) {
@@ -83,7 +90,7 @@ router.post('/whitelist', function (req, res, next) {
 
         if(isNonceTooLow() && !retryCountMaxReached()) {
           retryCount = retryCount + 1;
-          return web3Signer.retryAfterClearingNonce(rawTx, 'whitelister')
+          return web3Signer.retryAfterClearingNonce(rawTx, 'whitelister', whitelisterAddress)
             .then(publicEthereum.sendSignedTransaction)
             .then(handlePublicOpsOkResponse);
         } else {
@@ -93,7 +100,7 @@ router.post('/whitelist', function (req, res, next) {
     };
 
     // Sign the transaction, send it to public ops machine, send response
-    return web3Signer.signTransactionBy(rawTx, 'whitelister')
+    return web3Signer.signTransactionBy(rawTx, 'whitelister', whitelisterAddress)
       .then(publicEthereum.sendSignedTransaction)
       .then(handlePublicOpsOkResponse);
 
@@ -103,82 +110,6 @@ router.post('/whitelist', function (req, res, next) {
   Promise.resolve(performer()).catch(function(err){
     console.error(err);
     responseHelper.error('ts_5', 'Something went wrong').renderResponse(res)
-  });
-
-});
-
-/* POST TRANSFER ETHER TO WHITELISTER */
-router.post('/transfer-ether', function (req, res, next) {
-  const ethTransferPerformer = function () {
-    const decodedParams = req.decodedParams;
-
-    // Get the address of the  whitelister to be funded with ether
-    var whitelisterAddress = decodedParams.ethereum_address;
-
-    // for nonce too low error, we will retry once.
-    var retryCount = 0;
-
-    try {
-      // convert the addresses to checksum.
-      whitelisterAddress = web3RpcProvider.utils.toChecksumAddress(whitelisterAddress);
-    } catch(err) {
-      console.error(err);
-      return responseHelper.error(
-        'te_1',
-        'Invalid address passed. whitelisterAddress: ',
-        whitelisterAddress
-      ).renderResponse(res);
-    }
-
-    // check if address is a valid address
-    if (coreAddresses.getAddressForUser('whitelister').toLowerCase() != whitelisterAddress.toLowerCase()) {
-      return responseHelper.error('te_2', 'Whitelist address is invalid.').renderResponse(res);
-    }
-
-    // generate raw transaction
-    const rawTx = getRawTx.forEthTransfer(whitelisterAddress, '2');
-
-    // handle final response
-    const handlePublicOpsOkResponse = function (publicOpsResp) {
-      const success = publicOpsResp.success;
-
-      if (success) {
-        var publicOpsRespData = publicOpsResp.data || {}
-          , transactionHash = publicOpsRespData.transaction_hash;
-        return responseHelper.successWithData({transaction_hash: transactionHash}).renderResponse(res);
-      } else {
-        console.error(publicOpsResp);
-
-        const isNonceTooLow = function () {
-          return publicOpsResp.err.code.indexOf('nonce too low') > -1;
-        };
-
-        const retryCountMaxReached = function () {
-          return retryCount > 0;
-        };
-
-        if(isNonceTooLow() && !retryCountMaxReached()) {
-          retryCount = retryCount + 1;
-          return web3Signer.retryAfterClearingNonce(rawTx, 'coinBase')
-            .then(publicEthereum.sendSignedTransaction)
-            .then(handlePublicOpsOkResponse);
-        } else {
-          return responseHelper.error('te_4', 'Public OPS api error.', publicOpsResp.err.code).renderResponse(res);
-        }
-      }
-    };
-
-    // Sign the transaction, send it to public ops machine, send response
-    return web3Signer.signTransactionBy(rawTx, 'coinBase')
-      .then(publicEthereum.sendSignedTransaction)
-      .then(handlePublicOpsOkResponse);
-
-  };
-
-  // Verify token
-  Promise.resolve(ethTransferPerformer()).catch(function(err){
-    console.error(err);
-    responseHelper.error('te_5', 'Something went wrong').renderResponse(res)
   });
 
 });

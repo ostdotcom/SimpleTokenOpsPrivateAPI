@@ -13,7 +13,7 @@ const allAddresses = {
 
   users: {
     whitelister: {
-      address: process.env.ST_WHITELIST_ACCOUNT_ADDR,
+      address: process.env.ST_WHITELIST_ACCOUNT_ADDRS,
       passphrase: process.env.ST_WHITELIST_ACCOUNT_PASSPHRASE
     },
     postInitOwner: {
@@ -108,7 +108,20 @@ const coreAddresses = {
   bonusContractUserNamePrefix: bonusContractUserNamePrefix,
 
   getAddressForUser: function(userName){
-    return allAddresses.users[userName].address;
+    var userAddress =  allAddresses.users[userName].address;
+    if(!userAddress || userAddress=='' || Array.isArray(userAddress)){
+      throw "Please pass valid userName to get user address"
+    }
+    return userAddress;
+  },
+
+  // This must return array of addresses.
+  getAddressesForUser: function(userName){
+    var userAddresses = allAddresses.users[userName].address;
+    if(!userAddresses || !Array.isArray(userAddresses) || userAddresses.length==0 ){
+      throw "Please pass valid userName to get user address"
+    }
+    return userAddresses;
   },
 
   getPassphraseForUser: function(userName){
