@@ -18,7 +18,8 @@ const express = require('express')
   , jwtAuth = require('./lib/jwt/jwt_auth')
   // Address whitelisting route file
   , tokenSaleRoutes = require('./routes/token_sale')
-  , addressRoutes = require('./routes/address');
+  , addressRoutes = require('./routes/address')
+  , rootRoutes = require('./routes/root');
 
 app.use(logger('combined'));
 app.use(helmet());
@@ -75,6 +76,7 @@ const decodeJwt = function(req, res, next) {
 
 app.use('/token-sale', decodeJwt, tokenSaleRoutes);
 app.use('/address', decodeJwt, addressRoutes);
+app.use('/', rootRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
