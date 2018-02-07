@@ -14,7 +14,9 @@ const express = require('express')
 /* Elb health checker request */
 router.get('/', function (req, res, next) {
   const performer = function () {
-    console.log(req.headers['user-agent']);
+
+    // 200 OK response needed for ELB Health checker
+    console.log(req.headers['user-agent']);   // "ELB-HealthChecker/2.0"
     return responseHelper.successWithData({}).renderResponse(res);
   };
 
