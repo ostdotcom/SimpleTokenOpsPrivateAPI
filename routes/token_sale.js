@@ -51,10 +51,10 @@ router.post('/whitelist', function (req, res, next) {
       ).renderResponse(res);
     }
 
-    // check if whitelister address is valid
-    if (!web3Validator.isWhitelisterAddress(whitelisterAddress)) {
-      return responseHelper.error('ts_1.1', 'Whitelist address is invalid.').renderResponse(res);
-    }
+    // check if whitelister address is valid- dont check now. Rails should handle
+    // if (!web3Validator.isWhitelisterAddress(whitelisterAddress)) {
+    //   return responseHelper.error('ts_1.1', 'Whitelist address is invalid.').renderResponse(res);
+    // }
 
     // check if address is a valid address
     if (!web3Validator.isAddress(addressToWhiteList)) {
