@@ -99,6 +99,8 @@ router.post('/whitelist', function (req, res, next) {
       }
     };
 
+    //todo: if transaction fails nonce is not cleared
+
     // Sign the transaction, send it to public ops machine, send response
     return web3Signer.signTransactionBy(rawTx, 'whitelister', whitelisterAddress)
       .then(publicEthereum.sendSignedTransaction)
