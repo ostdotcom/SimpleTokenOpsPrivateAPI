@@ -17,7 +17,9 @@ const rootPrefix = '..'
   , responseHelper = require(rootPrefix + '/lib/formatter/response')
   , getRawTx = require(rootPrefix + '/lib/web3/get_raw_tx')
   , web3RpcProvider = require(rootPrefix + '/lib/web3/rpc_provider')
-  , coreAddresses = require(rootPrefix + '/config/core_addresses');
+  , coreAddresses = require(rootPrefix + '/config/core_addresses')
+  , nonceManager = require(rootPrefix + '/lib/web3/nonce_manager');
+;
 
 
 /* GET users listing. */
@@ -25,12 +27,16 @@ router.post('/whitelist', function (req, res, next) {
   const performer = function () {
     const decodedParams = req.decodedParams
       , phase = decodedParams.phase
-      ;
+      , nonce = decodedParams.nonce
+      , gasPrice = decodedParams.gasPrice
+      , isNonceAbsentInRequest = (nonce === undefined);
+    ;
 
     // Get the address of the contract for whitelisting. This will be different for different client.
-    var whitelisterAddress = decodedParams.whitelister_address;
-    var contractAddress = decodedParams.contract_address;
-    var addressToWhiteList = decodedParams.address;
+    var whitelisterAddress = decodedParams.whitelister_address
+      , contractAddress = decodedParams.contract_address
+      , addressToWhiteList = decodedParams.address
+    ;
 
     // for nonce too low error, we will retry once.
     var retryCount = 0;
@@ -67,33 +73,51 @@ router.post('/whitelist', function (req, res, next) {
     }
 
     // generate raw transaction
-    const rawTx = getRawTx.forWhitelisting(whitelisterAddress, contractAddress, addressToWhiteList, phase);
+    const rawTx = getRawTx.forWhitelisting(whitelisterAddress, contractAddress, addressToWhiteList, phase, nonce, gasPrice);
 
     // handle final response
     const handlePublicOpsOkResponse = function (publicOpsResp) {
-      const success = publicOpsResp.success;
-
+      const success = publicOpsResp.success
+        , usedNonce = rawTx.nonce
+        , usedGasPrice = rawTx.gasPrice
+      ;
       if (success) {
         var publicOpsRespData = publicOpsResp.data || {}
-          , transactionHash = publicOpsRespData.transaction_hash;
-        return responseHelper.successWithData({transaction_hash: transactionHash}).renderResponse(res);
+          , transactionHash = publicOpsRespData.transaction_hash
+          , processData = {
+            transaction_hash: transactionHash,
+            nonce:usedNonce,
+            gas_price:usedGasPrice
+          }
+        ;
+
+        return responseHelper.successWithData(processData).renderResponse(res);
       } else {
-        console.error(publicOpsResp);
 
         const isNonceTooLow = function () {
-          return publicOpsResp.err.code.indexOf('nonce too low') > -1;
+          return publicOpsResp.err.code.indexOf('wrong nonce') > -1;
+        };
+
+        const clearNonceIfRequired = function(){
+          if (!isNonceAbsentInRequest){
+            nonceManager.clearLocalNonce(whitelisterAddress);
+          }
         };
 
         const retryCountMaxReached = function () {
           return retryCount > 0;
         };
 
-        if(isNonceTooLow() && !retryCountMaxReached()) {
+        if(isNonceAbsentInRequest && isNonceTooLow() && !retryCountMaxReached()) {
           retryCount = retryCount + 1;
           return web3Signer.retryAfterClearingNonce(rawTx, 'whitelister', whitelisterAddress)
             .then(publicEthereum.sendSignedTransaction)
-            .then(handlePublicOpsOkResponse);
+            .then(handlePublicOpsOkResponse)
+            .catch(function(){
+              return responseHelper.error('ts_7', 'Private OPS api error.').renderResponse(res);
+            });
         } else {
+          clearNonceIfRequired();
           return responseHelper.error('ts_4', 'Public OPS api error.', publicOpsResp.err.code).renderResponse(res);
         }
       }
@@ -104,14 +128,17 @@ router.post('/whitelist', function (req, res, next) {
     // Sign the transaction, send it to public ops machine, send response
     return web3Signer.signTransactionBy(rawTx, 'whitelister', whitelisterAddress)
       .then(publicEthereum.sendSignedTransaction)
-      .then(handlePublicOpsOkResponse);
+      .then(handlePublicOpsOkResponse)
+      .catch(function(){
+        return responseHelper.error('ts_5', 'Private OPS api error.').renderResponse(res);
+      });
 
   };
 
   // Verify token
   Promise.resolve(performer()).catch(function(err){
     console.error(err);
-    responseHelper.error('ts_5', 'Something went wrong').renderResponse(res)
+    responseHelper.error('ts_6', 'Something went wrong').renderResponse(res)
   });
 
 });
