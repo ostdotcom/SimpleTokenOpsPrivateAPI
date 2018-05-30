@@ -95,7 +95,11 @@ router.post('/whitelist', function (req, res, next) {
       } else {
 
         const isNonceTooLow = function () {
-          return publicOpsResp.err.code.indexOf('wrong nonce') > -1;
+          return publicOpsResp.err.code.indexOf('wrong_nonce') > -1;
+        };
+
+        const isTxUnderpriced = function () {
+          return  publicOpsResp.err.code.indexOf('transaction_underpriced') > -1;
         };
 
         const clearNonceIfRequired = function(){
@@ -108,7 +112,7 @@ router.post('/whitelist', function (req, res, next) {
           return retryCount > 0;
         };
 
-        if(isNonceAbsentInRequest && isNonceTooLow() && !retryCountMaxReached()) {
+        if(isNonceAbsentInRequest && (isNonceTooLow() || isTxUnderpriced())&& !retryCountMaxReached()) {
           retryCount = retryCount + 1;
           return web3Signer.retryAfterClearingNonce(rawTx, 'whitelister', whitelisterAddress)
             .then(publicEthereum.sendSignedTransaction)
