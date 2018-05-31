@@ -27,8 +27,8 @@ router.post('/whitelist', function (req, res, next) {
   const performer = function () {
     const decodedParams = req.decodedParams
       , phase = decodedParams.phase
-      , nonce = decodedParams.nonce
-      , gasPrice = decodedParams.gasPrice
+      , nonce = web3RpcProvider.utils.toHex(decodedParams.nonce)
+      , gasPrice = web3RpcProvider.utils.toHex(decodedParams.gasPrice)
       , isNonceAbsentInRequest = (nonce === undefined);
     ;
 
