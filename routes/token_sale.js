@@ -98,6 +98,8 @@ router.post('/whitelist', function (req, res, next) {
           return publicOpsResp.err.code.indexOf('wrong_nonce') > -1;
         };
 
+        // when transaction is pending or queued and if any data(including gas price) is modified,
+        // but transaction cannot be resubmitted because gas price is still less than 110% of previous
         const isTxUnderpriced = function () {
           return  publicOpsResp.err.code.indexOf('transaction_underpriced') > -1;
         };
