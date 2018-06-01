@@ -82,6 +82,7 @@ router.post('/whitelist', function (req, res, next) {
         , usedGasPrice = rawTx.gasPrice
       ;
       if (success) {
+        console.log("handlePublicOpsOkResponse SUCCESS");
         var publicOpsRespData = publicOpsResp.data || {}
           , transactionHash = publicOpsRespData.transaction_hash
           , processData = {
@@ -94,6 +95,8 @@ router.post('/whitelist', function (req, res, next) {
         return responseHelper.successWithData(processData).renderResponse(res);
       } else {
 
+        console.error("handlePublicOpsOkResponse ERROR-", publicOpsResp.err.code);
+
         const isNonceTooLow = function () {
           return publicOpsResp.err.code.indexOf('wrong_nonce') > -1;
         };
@@ -105,7 +108,7 @@ router.post('/whitelist', function (req, res, next) {
         };
 
         const clearNonceIfRequired = function(){
-          if (!isNonceAbsentInRequest){
+          if (isNonceAbsentInRequest){
             nonceManager.clearLocalNonce(whitelisterAddress);
           }
         };
@@ -115,6 +118,7 @@ router.post('/whitelist', function (req, res, next) {
         };
 
         if(isNonceAbsentInRequest && (isNonceTooLow() || isTxUnderpriced())&& !retryCountMaxReached()) {
+          console.error("handlePublicOpsOkResponse RETRYING");
           retryCount = retryCount + 1;
           return web3Signer.retryAfterClearingNonce(rawTx, 'whitelister', whitelisterAddress)
             .then(publicEthereum.sendSignedTransaction)
