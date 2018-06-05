@@ -18,11 +18,8 @@ const rootPrefix = '..'
   , getRawTx = require(rootPrefix + '/lib/web3/get_raw_tx')
   , web3RpcProvider = require(rootPrefix + '/lib/web3/rpc_provider')
   , coreAddresses = require(rootPrefix + '/config/core_addresses')
+  , nonceCacheManagerKlass = require(rootPrefix + '/lib/cache_management/nonce_cache_manager')
 ;
-
-// Open this nonceManager if you don't want caching management for nonce
-// const nonceManager = require(rootPrefix + '/nonce_manager');
-const nonceCacheManagerKlass = require(rootPrefix + '/lib/cache_management/nonce_cache_manager');
 
 
 /* GET users listing. */
@@ -113,7 +110,7 @@ router.post('/whitelist', function (req, res, next) {
         const clearNonceIfRequired = function(){
           if (isNonceAbsentInRequest){
             const nonceManager = new nonceCacheManagerKlass({address_id: whitelisterAddress});
-            nonceManager.clearLocalNonce(whitelisterAddress);
+            nonceManager.clearLocalNonce();
           }
         };
 
