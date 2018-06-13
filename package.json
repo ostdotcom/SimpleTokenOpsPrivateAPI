@@ -6,6 +6,7 @@
     "start": "node ./bin/wwws"
   },
   "dependencies": {
+    "@openstfoundation/openst-cache": "1.0.3",
     "abi-decoder": "^1.0.9",
     "bignumber.js": "^4.1.0",
     "body-parser": "~1.18.2",
