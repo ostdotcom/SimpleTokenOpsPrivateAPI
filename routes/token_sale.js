@@ -140,7 +140,8 @@ router.post('/whitelist', function (req, res, next) {
     return web3Signer.signTransactionBy(rawTx, 'whitelister', whitelisterAddress)
       .then(publicEthereum.sendSignedTransaction)
       .then(handlePublicOpsOkResponse)
-      .catch(function(){
+      .catch(function(err){
+        console.error(err);
         return responseHelper.error('ts_5', 'Private OPS api error.').renderResponse(res);
       });
 
