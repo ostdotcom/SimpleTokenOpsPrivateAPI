@@ -78,7 +78,8 @@ const helper = {
       var handleGetTxInfoResponse = function (response) {
         console.log("getTransactionInfo API response: ");
         console.log(response);
-        if (response.success) {
+        var status = (response['data'] || {})['status'];
+        if (response.success && (status === 'mined' || status === 'failed')) {
           clearInterval(txSetInterval);
           onResolve(response);
         } else {
