@@ -41,3 +41,4 @@ export ST_ALT_COIN_DIST_PASSPHRASE=''
 
 export OPRA_CACHE_ENGINE='memcached'
 export OST_MEMCACHE_SERVERS='127.0.0.1:11211'
+export NODE_ENV='development'

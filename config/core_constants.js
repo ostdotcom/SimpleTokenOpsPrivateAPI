@@ -12,6 +12,8 @@ function define(name, value) {
         enumerable: true
     });
 }
+
+define("NODE_ENV", process.env.NODE_ENV);
 define("HTTPS_PORT", process.env.OPS_API_HTTPS_PORT);
 define("HTTPS_KEY", process.env.OPS_API_HTTPS_KEY);
 define("HTTPS_CERT", process.env.OPS_API_HTTPS_CERT);
