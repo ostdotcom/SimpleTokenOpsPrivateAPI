@@ -120,8 +120,9 @@ const helper = {
         console.log("Iteration: " + i + " at address: " + contractAddress + " Data to Process: " + data[i]);
         // Call add data method of contract
         await helper.sendTransaction('callAddData', contractName, contractAddress, senderName, data[i])
-          .then(helper.verifyPublicOpsResponse)
-          .then(function(data){console.log(data.data.events_data[0].events);});
+          .then(function(data){console.log(data);});
+          //.then(helper.verifyPublicOpsResponse)
+          //.then(function(data){console.log(data.data.events_data[0].events);});
         // If contract instance data entry is complete
         if ( (((i + 1) % maxEntriesPerContract) === 0) || ((i + 1) == data.length) ) {
           // Call lock method of contracts
