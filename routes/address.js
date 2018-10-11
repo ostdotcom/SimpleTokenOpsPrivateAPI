@@ -51,7 +51,7 @@ router.post('/generate-whitelister-address', function (req, res, next) {
             ;
             return responseHelper.successWithData({whitelisterAddress: whitelisterAddress}).renderResponse(res);
         } catch(err) {
-            return responseHelper.error('r_a_g_1', 'Invalid address'+err).renderResponse(res);
+            return responseHelper.error('r_a_g_1', 'Invalid response from geth'+err).renderResponse(res);
         }
     };
     Promise.resolve(performer()).catch(function (err) {
