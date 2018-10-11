@@ -13,7 +13,7 @@ const allAddresses = {
 
   users: {
     whitelister: {
-      address: JSON.parse(process.env.ST_WHITELIST_ACCOUNT_ADDRS),
+      address: [],
       passphrase: process.env.ST_WHITELIST_ACCOUNT_PASSPHRASE
     },
     postInitOwner: {
