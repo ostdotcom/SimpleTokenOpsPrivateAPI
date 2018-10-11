@@ -11,7 +11,8 @@ const express = require('express')
   , router = express.Router()
   , responseHelper = require('../lib/formatter/response')
   , web3Validator = require('../lib/web3/validator')
-  , web3RpcProvider = require('../lib/web3/rpc_provider');
+  , web3RpcProvider = require('../lib/web3/rpc_provider')
+;
 
 
 /* validate checksum for a address */
@@ -39,6 +40,24 @@ router.get('/check', function (req, res, next) {
     responseHelper.error('r_a_3', 'Something went wrong').renderResponse(res)
   });
 
+});
+
+
+/* generate address */
+router.post('/generate-whitelister-address', function (req, res, next) {
+    const performer = async function() {
+        try {
+            const whitelisterAddress = await web3RpcProvider.eth.personal.newAccount(process.env.ST_WHITELIST_ACCOUNT_PASSPHRASE)
+            ;
+            return responseHelper.successWithData({whitelisterAddress: whitelisterAddress}).renderResponse(res);
+        } catch(err) {
+            return responseHelper.error('r_a_g_1', 'Invalid address'+err).renderResponse(res);
+        }
+    };
+    Promise.resolve(performer()).catch(function (err) {
+        console.error(err);
+        responseHelper.error('r_a_g_1', 'Something went wrong').renderResponse(res)
+    });
 });
 
 module.exports = router;
