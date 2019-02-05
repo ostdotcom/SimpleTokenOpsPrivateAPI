@@ -70,7 +70,7 @@ const processableAllocations = {
 
         var checkSumAddr = web3RpcProvider.utils.toChecksumAddress(receiverAddr);
         console.log("parsed validated addrs: " + checkSumAddr + " amount: " + amount.toString(10));
-        parsedData.push([checkSumAddr, amount]);
+        parsedData.push([checkSumAddr, amount.toString(10)]);
       }
 
       onResolve(parsedData);
